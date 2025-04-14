@@ -1,0 +1,130 @@
+package com.cutlab;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Properties;
+
+import com.dao.Database;
+
+import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.SendFailedException;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+
+@WebServlet("/SendEmail")
+public class SendEmail extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    // SMTP Server Configuration (Gmail example)
+    private static final String SMTP_HOST = "smtp.gmail.com";
+    private static final String SMTP_PORT = "587";
+    private static final String USERNAME = "anishpersonalanne@gmail.com";
+    private static final String PASSWORD = "wrst ojgq xevw ncqd"; // Store password in environment variable
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+    	Database db = new Database();
+    	String email = request.getParameter("email");
+    	response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+    	try {
+			if(db.checkIfEmailAlreadyExists(email)) {
+				response.getWriter().write("{\"status\":\"fail\", \"message\":\"Email already exist!\"}");
+			}else {
+				Integer code = (int)(Math.random() * 9000) + 1000;
+		        System.out.println("Generated verification code: " + code);
+
+		        boolean emailSent = sendVerificationEmail(email, code);
+
+		        if (emailSent) {
+		        	HttpSession session = request.getSession();
+		        	
+		        	session.setAttribute("verificationCode", code.toString());
+		        	session.setAttribute("verificationEmail", email);
+		            response.getWriter().write("{\"status\":\"success\"}");
+		        } else {
+		            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to send verification email");
+		        }
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+        
+    }
+
+    private boolean sendVerificationEmail(String email, int code) {
+    	boolean flag=false;
+    	try {
+            String to = email;
+            String subject = "Confirmation Email for Creating Account";
+            String body = "This email was sent for confirmation! Your code is: " + code + " . Please do not share it with others.";
+
+            // 1. Setup SMTP properties
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+//            props.put("mail.smtp.starttls.required", "true");
+            props.put("mail.smtp.starttls.enable", "true"); // TLS encryption
+            props.put("mail.smtp.host", SMTP_HOST);
+            props.put("mail.smtp.port", SMTP_PORT);
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+//			props.put("mail.smtp.ssl.protocols", "TLSv1.2"); // Security protocol
+			
+        // 2. Create authenticator
+            Authenticator auth = new jakarta.mail.Authenticator() {
+            	@Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(USERNAME, PASSWORD);
+                }
+            };
+            // 3. Create session
+            Session session = Session.getInstance(props, auth);
+
+            // 4. Create message
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(USERNAME));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject(subject);
+            message.setText(body); // Plain text email
+
+            // 5. Send email
+            Transport.send(message);
+            flag=true;
+            
+            System.out.println("Email sent successfully!");
+            return flag;
+
+        } catch (AuthenticationFailedException e) {
+            System.err.println("Authentication failed - check credentials.");
+            e.printStackTrace();
+        } catch (SendFailedException e) {
+            System.err.println("Invalid recipient address.");
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            System.err.println("MessagingException occurred while sending the email:");
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Unexpected error occurred:");
+            e.printStackTrace();
+        }
+        return flag;
+    }
+}
+

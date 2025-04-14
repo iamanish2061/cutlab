@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="css/LoginAndSignup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=Playfair+Display:wght@700&family=Nunito:wght@300;400;700&display=swap" rel="stylesheet">
+  
+    <!-- jQuery and jQuery UI (CDN) -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<!-- <link rel="stylesheet" href="css/jquery-ui.css">
+	<script src="js\jquery-3.6.0.min.js"></script>
+	<script src="js\jquery-ui.js"></script> -->
+    
+</head>
+<body>
+		
+    <div class="container">
+        <div class="form-container">
+            <!-- Login Form -->
+            <div class="form-section login-section">
+              <form id="login-form" method="post" action="/cutlab/LoginProcess">
+                <h2>Login</h2>
+
+                <div class="input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="login-email" autocomplete="username" value="" required> 
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="login-password" autocomplete="current-password" required>
+                </div>
+
+                <div>
+                  <input type="checkbox" id="showLoginPassword" onclick="passwordToggleShowHide('login')">Show Password<br>
+                </div>
+  				<br>
+                <div class="login-error-msg">  </div>  
+              
+                <div class="forgot-password">
+                    <a href="forgotPassword.html">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn">Log In</button>
+              </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div class="form-section signup-section">
+              <form id="signup-form" method="post" action="/cutlab/SignupProcess">
+                <h2>Create Account</h2>
+
+                <div class="first-part" id="first-part">
+                  <div class="input-group">
+
+                    <div class="input-group-inside fname">
+                      <label for="signup-fname">First Name</label>
+                      <input type="text" id="signup-fname" name="signup-fname" oninput="validateName('First Name','signup-fname')" required> 
+                    </div>
+
+                    <div class="input-group-inside lname">
+                      <label for="signup-lname">Last Name</label>
+                      <input type="text" id="signup-lname" name="signup-lname" oninput="validateName('Last Name','signup-lname')" required> 
+                    </div>
+
+                  </div>
+
+                  <div class="input-group">
+                    <label for="signup-male" required>Gender</label>
+
+                    <div class="gender-list">
+                      <input type="radio" id="signup-male" name="signup-gender" value="male" onchange="checkForNextButton()" required>Male
+                    </div>
+
+                    <div class="gender-list">
+                        <input type="radio" id="signup-female" name="signup-gender" value="female" onchange="checkForNextButton" required>Female
+                    </div>
+
+                    <div class="gender-list">                   
+                        <input type="radio" id="signup-others" name="signup-gender" value="others" onchange="checkForNextButton" required>Others
+                    </div>
+                  </div>
+
+                  <div class="input-group">
+                    <label for="signup-dob">Birth Date</label>
+       				    <input type="text" id="signup-dob" name="signup-dob" onchange="validateDate('signup-dob')" placeholder="Select Date" required>     
+                  </div>
+
+                  <div class="input-group">
+                    <label for="signup-address">Address</label>
+                    <input type="text" id="signup-address" name="signup-address" placeholder="City, District" oninput="validateAddress('signup-address')" required>
+                  </div>
+
+                  <div class="input-group">
+                    <label for="signup-number">Phone Number</label>
+                    <input type="text" id="signup-number" name="signup-number" oninput="validateNumber('signup-number')" required>        
+                  </div>
+                  <div class="signup-error-msg" id="first-signup-error-msg"></div>
+
+                  <div class="incomplete-content next">
+                    <h4 id="first-page-next" style="display:none;">Next &gt; </h4>
+                  </div>
+                </div>
+
+
+
+                <div class="second-part" id="second-part" style="display: none;">
+                  <div class="input-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" name="signup-email" autocomplete="email" oninput="validateEmail('signup-email')" required>
+                  </div>
+                  
+                  <div><a id="sendCode" style="display:none;">Send Code</a></div>
+                 
+                  <div class="verificationCode" id="verificationCode" style="display:none;">
+	                  <div class="input-group">
+		                  <label for="random-generated-code">Enter code</label>
+	                  	  <input type="text" id="random-generated-code" name="random-generated-code" oninput="checkForNextButton()" required>
+	                  </div>
+	              </div>
+	              
+                 
+                  <div class="signup-error-msg" id="second-signup-error-msg"></div>
+                  <br>
+                  
+                  <div class="incomplete-content both">
+                    <h4 onclick="toggleContentOfSignupForm('second-prev')">&lt; Prev</h4>
+                    <h4 id="second-page-next" style="display:none;">Next &gt; </h4>
+                  </div>
+                  
+				</div>
+				
+				
+								
+				<div class="third-part" id="third-part" style="display: none;">
+                  <div class="input-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" name="signup-password" autocomplete="new-password" oninput="validatePassword('validate')" required>
+                  </div>
+
+                  <div class="input-group">
+                    <label for="signup-confirm">Confirm Password</label>
+                    <input type="password" id="signup-confirm" name="signup-confirm" autocomplete="new-password" oninput="validatePassword('confirm')" required>
+                  </div>
+
+                  <div>
+                    <input type="checkbox" id="showSignupPassword" onclick="passwordToggleShowHide('signup')">Show Password<br><br>
+                  </div>
+              
+                  <div class="signup-error-msg" id="third-signup-error-msg"></div>
+                  <div class="signup-error-msg" id="errorBeforeSubmit"></div>
+
+                  <div class="incomplete-content prev">
+                    <h4 onclick="toggleContentOfSignupForm('third')"> &lt; Prev</h4>
+                  </div>
+                  <br>
+
+                  <button type="submit" class="btn" id="signup-btn">Sign Up</button>
+                </div>
+                
+              </form>
+            </div>
+
+            <!-- Overlay -->
+            <div class="overlay-container">
+                <div class="overlay">
+                  <div class="overlay-panel overlay-left">  <!-- yo div maa photo halna milxa -->
+                    <h2>Welcome!</h2>
+                    <p>Already have an account? Login to continue your journey with us.</p>
+                    <button class="btn ghost" id="login">Login</button>
+                  </div>
+
+                  <div class="overlay-panel overlay-right">
+                    <h2>Hello, Friend!</h2>
+                    <p>Don't have an account? Sign up and start your journey with us.</p>
+                    <button class="btn ghost" id="signup">Sign Up</button>
+                  </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    
+    <script src="js/LoginAndSignup.js"></script>
+    
+	<!-- <script>signupStatus("<%= msg %>");</script> -->
+
+    <script>
+    
+    $(document).ready(function() {
+      $("#signup-dob").datepicker({
+    	  dateFormat: "mm-dd-yy",
+          changeMonth: true,
+          changeYear: true,
+          minDate: new Date(1900, 0, 1),
+          maxDate: "+0Y"
+      });
+    });
+  
+
+    $(document).ready(function() {
+    	
+    	//to send code to gmail account
+      $('#sendCode').click(function(e) {
+    	$('#sendCode').hide();
+        e.preventDefault();
+        const email = $('#signup-email').val();
+        
+        $.ajax({
+          url: '/cutlab/SendEmail',
+          type: 'POST',
+          data: { email: email },
+          success: function(response) {
+        	  if(response.status == 'success'){
+        		  $('#verificationCode').show();
+                  $('#second-signup-error-msg').text('Verification code sent!').css('color', 'green');
+        	  }else{
+        		  $('#second-signup-error-msg').text(response.message).css('color', 'red');
+                  $('#sendCode').show();
+        	  }
+          },
+          error: function(xhr) {
+            $('#second-signup-error-msg').text('Failed to send code. Please try again.').css('color', 'red');
+            $('#sendCode').show();
+          }
+        });
+      });
+      
+      //to verify number
+      $('#first-page-next').click(function(e){
+    	  e.preventDefault();
+    	  const phoneNumber = $('#signup-number').val();
+    	  
+    	  $.ajax({
+    		 url: '/cutlab/VerifyNumber',
+    		 type: 'POST',
+    		 data: 	{ 
+    			 		number: phoneNumber 
+    			 	},
+    		success: function(response){
+	    		if(response.status == 'success'){
+	              $('#first-signup-error-msg').text('Number is valid... Please wait!').css('color', 'green');
+	              
+	              setTimeout(() => {
+	            	  toggleContentOfSignupForm('first');
+	              }, 1500);
+	              
+	       	  	}else{
+	       		  $('#first-signup-error-msg').text(response.message).css('color', 'red');
+	       	  	}
+    		},
+    		error: function(xhr){
+    			$('#first-signup-error-msg').text('Failed to check number. Please try again.').css('color', 'red');
+    		}
+    	  });
+      });
+      
+      /* to verify email's code */
+      $("#second-page-next").click(function(e){
+    	  e.preventDefault();
+    	  const code = $('#random-generated-code').val();
+    	  const email = $('#signup-email').val();
+    	  
+    	  $.ajax({
+    		 url: '/cutlab/VerifyEmail',
+    		 type: 'POST',
+    		 data: 	{ 
+    			 		code: code,
+    			 		email: email
+    			 	},
+    		success: function(response){
+	    		if(response.status == 'success'){
+	              $('#second-signup-error-msg').text('Verification code matched.. Please wait!').css('color', 'green');
+	              
+	              setTimeout(() => {
+	            	  toggleContentOfSignupForm('second-next');
+	              }, 1500);
+	              
+	       	  	}else{
+	       		  $('#second-signup-error-msg').text(response.message).css('color', 'red');
+	       	  	}
+    		},
+    		error: function(xhr){
+    			$('#second-signup-error-msg').text('Failed to check code. Please try again.').css('color', 'red');
+    		}
+    	  });
+      });
+      
+    });
+
+    </script>
+    
+    
+</body>
+</html>

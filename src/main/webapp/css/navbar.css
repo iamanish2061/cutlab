@@ -1,0 +1,120 @@
+@charset "ISO-8859-1";
+
+/* Font Variables */
+:root {
+  /* Primary Font - Elegant & Modern */
+  --font-primary: 'Poppins', sans-serif; /* Clean & Trendy */
+
+  /* Secondary Font - Sophisticated Accent */
+  --font-secondary: 'Playfair Display', serif; /* Elegant & Classy */
+
+  /* Body Text Font - Readable & Soft */
+  --font-body: 'Nunito', sans-serif; /* Friendly & Comfortable */
+
+  /* Font Weights */
+  --font-light: 300;
+  --font-regular: 400;
+  --font-bold: 700;
+}
+
+/* Apply Fonts */
+body {
+  font-family: var(--font-body);
+}
+
+/* Navbar Container */
+.navbar {
+  background-color: #1f2937; /* bg-gray-800 */
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Container for Navbar Content */
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo */
+.logo {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: var(--font-bold); /* Using the bold font weight */
+  font-family: var(--font-primary); /* Apply primary font */
+  color: #3b82f6; /* text-blue-500 */
+  text-decoration: none;
+}
+
+/* Hamburger Menu (Mobile) */
+.menu-toggle {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.hamburger-icon {
+  width: 1.5rem; /* w-6 */
+  height: 1.5rem; /* h-6 */
+  stroke: currentColor; /* stroke-currentColor */
+  stroke-width: 2; /* stroke-width-2 */
+  stroke-linecap: round; /* stroke-linecap-round */
+  stroke-linejoin: round; /* stroke-linejoin-round */
+}
+
+/* Nav Links */
+.menu {
+  display: flex;
+  gap: 2rem; /* space-x-8 */
+}
+
+.nav-link {
+  font-family: var(--font-primary); /* Use primary font for links */
+  font-weight: var(--font-regular); /* Use regular font weight for nav links */
+  color: #d1d5db; /* text-gray-300 */
+  text-decoration: none;
+  transition: color 0.3s ease; /* transition duration-300 */
+}
+
+.nav-link:hover {
+  color: #3b82f6; /* hover:text-blue-500 */
+}
+
+/* Mobile Menu Styles */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block; /* Show hamburger menu on mobile */
+  }
+
+  .menu {
+    display: none; /* Hide menu by default on mobile */
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #1f2937; /* bg-gray-800 */
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    opacity: 0; /* Initially hidden */
+    visibility: hidden; /* Initially hidden */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth visibility toggle */
+  }
+
+  .menu.active {
+    display: flex; /* Show menu when active */
+    opacity: 1; /* Make it visible */
+    visibility: visible; /* Ensure it's visible */
+  }
+
+  .menu.active .nav-link {
+    margin: 0.5rem 0; /* Add spacing between links */
+  }
+}

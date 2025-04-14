@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+                
+                <div class="form-section signup-section">
+                <form id="signup-form" method="post" action="/cutlab/SignupProcess">
+                  <h2>Create Account</h2>
+                  <div class="email-part" id="email-part">
+                    <div class="input-group">
+                      <label for="signup-email">Email</label>
+                      <input type="email" id="signup-email" name="signup-email" autocomplete="email" oninput="validateEmail('signup-email')" required>
+                    </div>
+                    <div><a id="sendCode" style="display:none;">Send Code</a></div>
+                    <div class="verificationCode" id="verificationCode" style="display:none;">
+                        <div class="input-group">
+                            <label for="random-generated-code">Enter code</label>
+                              <input type="text" id="random-generated-code" name="random-generated-code" oninput="checkForNextButton()" required>
+                        </div>
+                    </div>
+            
+                    <div class="signup-error-msg" id="email-signup-error-msg"></div>
+                    <br>
+                    <div class="incomplete-content next">
+                      <h4 id="email-page-next" style="display:none;">Next &gt; </h4>
+                    </div>
+                  </div>
+                               
+                  <div class="password-part" id="password-part" style="display: none;">
+                    <div class="input-group">
+                      <label for="signup-password">Password</label>
+                      <input type="password" id="signup-password" name="signup-password" autocomplete="new-password" oninput="validatePassword('validate')" required>
+                      <img class="eye-icon" src="images/eye.png" alt="" onmouseover="passwordToggleShowHide('signup','in')" onmouseout="passwordToggleShowHide('signup','out')">
+                    </div>
+                    <div class="input-group">
+                      <label for="signup-confirm">Confirm Password</label>
+                      <input type="password" id="signup-confirm" name="signup-confirm" autocomplete="new-password" oninput="validatePassword('confirm')" required>
+                      <img class="eye-icon" src="images/eye.png" alt="" onmouseover="passwordToggleShowHide('confirm','in')" onmouseout="passwordToggleShowHide('confirm','out')">
+                    </div>
+                
+                    <div class="signup-error-msg" id="password-signup-error-msg"></div>
+                    <div class="incomplete-content prev">
+                      <h4 onclick="toggleContentOfSignupForm('password-part')"> &lt; Prev</h4>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn" id="signup-btn">Sign Up</button>
+                  </div>
+                </form>
+              </div>
+
+</body>
+</html>
