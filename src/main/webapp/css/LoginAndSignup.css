@@ -227,7 +227,7 @@ a {
   text-align: center;
 }
 
-#signup-form .email-part, #signup-form .password-part{
+#signup-form .emailSection, #signup-form .passwordSection{
   width: 100%;
 }
 
@@ -296,7 +296,11 @@ a {
 .forgot-password {
   margin: 15px 0;
   width: 100%;
-  text-align: right;
+  text-align: center;
+}
+
+.forgot-password a:hover{
+  color: var(--error);
 }
 
 #sendCode{
@@ -359,7 +363,7 @@ a {
 .signup-error-msg, .login-error-msg{
   font-family: var(--font-body);
   font-weight: var(--font-bold);
-  color:red;
+  color:var(--error);
 }
 
 .eye-icon{

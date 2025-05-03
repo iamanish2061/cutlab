@@ -1,258 +1,246 @@
-document.addEventListener('DOMContentLoaded', function() {
-  // Get elements from the DOM
-  const signUpButton = document.getElementById('signup');
-  const logInButton = document.getElementById('login');
-  const container = document.querySelector('.form-container');
+  $(document).ready(function() {
 
-  // Toggle between login and signup views
-  signUpButton.addEventListener('click', () => {
-      container.classList.add('right-panel-active');
-  });
+     // Get elements from the DOM
+     const signUpButton = document.getElementById('signup');
+     const logInButton = document.getElementById('login');
+     const container = document.querySelector('.form-container');
+ 
+     // Toggle between login and signup views
+     signUpButton.addEventListener('click', () => {
+     container.classList.add('right-panel-active');
+     });
+ 
+     logInButton.addEventListener('click', () => {
+     container.classList.remove('right-panel-active');
+     });
 
-  logInButton.addEventListener('click', () => {
-      container.classList.remove('right-panel-active');
-  });
+    //inputting email
+    $('#signup-email').on('input', function(){
+        displayEmailError(this,"#email-signup-error-msg");
+    });
 
-})
+    //inputting password
+    $('#signup-password').on('input', function(){
+        displayPasswordError(this,"#password-signup-error-msg", '#signup-confirm');
+    });
 
-//login ra signup ko password show hide
-function passwordToggleShowHide(form, action){
-    var passwordField;
-    if(form == 'login'){
-        passwordField = document.getElementById("login-password");
-    }else if(form == 'signup'){
-        passwordField = document.getElementById("signup-password");
-    }else{
-        passwordField = document.getElementById("signup-confirm");
-    }
+    //confirming password
+    $('#signup-confirm').on('input', function(){
+        displayConfirmPasswordError("#signup-password", this, "#password-signup-error-msg");
+    });
 
-    if(action == 'in'){
-        passwordField.type = 'text';
-    }else if(action == 'out'){
-        passwordField.type = 'password';
-    }else{
+    //formatting date of datepicker
+    $("#signup-dob").datepicker({
+        dateFormat: "mm-dd-yy",
+        changeMonth: true,
+        changeYear: true,
+        minDate: new Date(1900, 0, 1),
+        maxDate: "+0Y"
+    });
 
-    }
+    //to send code to gmail account
+    // promises and handler pani check garnu xa
+    $('#sendCode').click(function(e) {
+        e.preventDefault();
+        const email = $('#signup-email').val().trim();
+        const validEmail = validateEmail(email);
+        const displayErrorMsg = $('#email-signup-error-msg');
 
-}
-
-
-
-//validation of signup
-var email_error = document.getElementById('email-signup-error-msg');
-var password_error = document.getElementById('password-signup-error-msg');
-
-var passwordFlag = 0;
-var confirmPasswordFlag = 0;
-
-function validateName(e_name, entered_id){
-    const entered_name= document.getElementById(entered_id).value;
-    let pattern = /^[a-zA-Z]{3,}$/;
-    if(entered_name.toString().length < 3){
-        first_error_msg.innerHTML = `${e_name} must be more than three characters`;
-        if(e_name == 'First Name'){
-	        total_filled[0]=0;			
-		}else{
-			total_filled[1]=0;
-		}
-    }
-    else if(!pattern.test(entered_name)){
-        first_error_msg.innerHTML = `${e_name} should only contain alphabets (a-z)`;
-        if(e_name == 'First Name'){
-	        total_filled[0]=0;			
-		}else{
-			total_filled[1]=0;
-		}
-    }
-    else{
-        first_error_msg.innerHTML = '';
-        if(e_name == 'First Name'){
-	        total_filled[0]=1;			
-		}else{
-			total_filled[1]=1;
-		}
-    }
-    checkForNextButton();
-}
-
-function validateGender() {
-    const isGenderSelected = document.querySelector('input[name="signup-gender"]:checked');
-    if (!isGenderSelected) {
-        return false;
-    }
-    return true;
-}
-
-function validateDate(entered_dob) {
-    const dobValue = document.getElementById(entered_dob).value;
-
-    if (!dobValue) {
-        first_error_msg.innerHTML = 'Please select a date!';
-        total_filled[2] = 0;
-        return;
-    }
-
-    // Convert string to Date object (MM-DD-YYYY format)
-    let dob = $.datepicker.parseDate("mm-dd-yy", dobValue);
-
-    // Extract the year
-    let year = dob.getFullYear();
-
-    if (year < 1900 || year > 2022) {
-        first_error_msg.innerHTML = 'Invalid date selection!!';
-        total_filled[2] = 0;
-    } else {
-        first_error_msg.innerHTML = '';
-        total_filled[2] = 1;
-    }
-	
-	checkForNextButton();
-}
-
-function validateAddress(entered_address){
-	const address = document.getElementById(entered_address).value;
-	let pattern = /^[A-Za-z0-9\s,.-]+$/;
-	if(address.toString().length < 3){
-		first_error_msg.innerHTML = 'Address cant be this short!';
-		total_filled[3]=0;
-	}else if(!pattern.test(address)){
-		first_error_msg.innerHTML = 'Address cant be this short!';
-		total_filled[3]=0;
-	}else{
-		first_error_msg.innerHTML = '';
-		total_filled[3]=1;
-	}
-	checkForNextButton();
-}
-
-function validateNumber(entered_num){
-    const num= document.getElementById(entered_num).value;
-    let pattern = /^[9]{1}[0-9]{9}$/;
-
-    if(num.toString()[0] != '9'){
-        first_error_msg.innerHTML = 'Number must starts with 9!';
-        total_filled[4] = 0;
-    }
-    else if(!pattern.test(num)){
-        first_error_msg.innerHTML = 'Number must be of 10 digits!'
-        total_filled[4] = 0;
-    }     
-    else{
-       first_error_msg.innerHTML = '';
-        total_filled[4] = 1;
-    }
-
-	checkForNextButton();
-}
-
-function validateEmail(entered_email){
-    const email = document.getElementById(entered_email).value;
-    let pattern = /^[a-z0-9A-Z\.]+[@]{1}[a-z]+[.]{1}[a-z]{1,3}$/ ;
-    if(!pattern.test(email)){
-        email_error.innerText = "Invalid email !";
-        $("#sendCode").hide();
-    }else{
-        email_error.innerText = "";
-        $("#sendCode").show();
-    }
-}
-
-function validatePassword(task){
-    const password = document.getElementById('signup-password').value;
-    const confirmPass = document.getElementById('signup-confirm').value;
-    if(task == 'validate'){
-        let pattern =/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[.@#$%&*]).{8,}$/;
-        if(!pattern.test(password)){
-            password_error.innerHTML = 'Password must of be at 8 characters and must contain at least one number, one upper case, one lowercase , and one special char';
-            passwordFlag = 0;
-        }else{
-            password_error.innerHTML = '';
-            passwordFlag = 1;
-        }   
-    }else{
-        if(password != confirmPass){
-            password_error.innerHTML = 'Password doesnot Match!';
-            confirmPasswordFlag = 0;
-        }else{
-            password_error.innerHTML = '';
-            confirmPasswordFlag = 1;
+        if(!email){
+            displayErrorMsg.text('Please enter the email first!').css('color', 'red');
+            return;
         }
-    }
+        if(validEmail){
+            displayErrorMsg.text(validEmail).css('color', 'red');
+            return;
+        }
 
-    if(passwordFlag == 1 && confirmPasswordFlag ==1){
-        $('#signup-btn').show();
-        password_error.innerText = ' ';
-    }else{
-        $('#signup-btn').hide();
-    }
-    
-    if(confirmPass.trim() != "" && confirmPass == password){
-			$('#signup-btn').show();
-	}else{
-		$('#signup-btn').hide();
-	}
-	
-}
+        $('#sendCode').hide();
+        sendVerificationCode(email, "CreateAccount", displayErrorMsg, function(success){
+            if(success){
+                $('#verificationCode').show();
+            }else{
+                $('#sendCode').show();
+            }
+        });
+    });
 
-function showNextButton(direction){
-    if(direction == 'next'){
-        $('#email-page-next').show();
-    }
-}
+    /* to verify email's code */
+    $("#nextSection").click(function(e){
+        e.preventDefault();
 
-function checkForNextButton(){
-// 	const total_sum = total_filled.reduce((accumulator, currentValue) => {
-//         return accumulator + currentValue;
-//       }, 0);
-      
-//       if(total_sum == 5 && validateGender()){
-//       	$("#first-page-next").show();
-      	
-//       	var code = $('#random-generated-code').val();
-//       	if(code && code.toString().length == 4){
-// 			if(emailFlag==1){
-// 				$("#second-page-next").show();
-				
-// 				if(passwordFlag == 1 && confirmPasswordFlag ==1){
-// 					$('#signup-btn').show();
-// 					document.getElementById('errorBeforeSubmit').innerText = ' ';
-// 				}else{
-// 					$('#signup-btn').hide();
-// 					document.getElementById('errorBeforeSubmit').innerText = 'Please fill the above fileds correctly!';
-// 				}
-				
-// 			}else{
-// 				$("#second-page-next").hide();
-// 			}
-// 		}
-      	
-// 	  }else{
-// 		$("#first-page-next").hide();
-// 		if(total_sum == 5 && !validateGender){
-// 			first_error_msg.innerHTML = 'Please select Gender!';			
-// 		}
-// 	  }
-}
+        const code = $('#random-generated-code').val().trim();
+        const email = $('#signup-email').val().trim();
+        const validEmail = validateEmail(email);
+        const displayErrorMsg = $('#email-signup-error-msg');
+
+        if(!email){
+            displayErrorMsg.text('Please enter the email first!').css('color', 'red');
+            return;
+        }
+        if(validEmail){
+            displayErrorMsg.text(validEmail).css('color', 'red');
+            return;
+        }
+        if(!code){
+            displayErrorMsg.text('Please enter the code first!').css('color', 'red');
+            return;
+        }
+        if (!/^\d{4}$/.test(code)){
+        	displayErrorMsg.text('Invalid Code!').css('color', 'red');
+            return;
+        }
+        verifyCode(code, email, displayErrorMsg, function(success){
+            if(success){
+                displayErrorMsg.text('Verification Code Matched!').css("color", "green");
+                setTimeout(() => {
+                    toggleContentOfSignupForm('email');
+                    displayErrorMsg.text('');
+                }, 1000);
+            }
+        });
+    });
+
+    // to submit login form
+    $('#login-btn').click(function(e) {
+        e.preventDefault();
+        const email = $('#login-email').val().trim();
+        const password = $('#login-password').val().trim();
+        const displayMsg = $('#login-error-msg');
+
+        const validEmail = validateEmail(email);
+        const validPassword = validatePassword(password);
+
+        if(!email){
+            displayMsg.text('Please enter the email first!').css('color', 'red');
+            return;
+        }
+        if(validEmail){
+            displayMsg.text(validEmail).css('color', 'red');
+            return;
+        }
+        if(!password){
+            displayMsg.text('Please enter the password first!').css('color', 'red');
+            return;
+        }
+        if(validPassword){
+            displayMsg.text("Invalid Password!").css('color', 'red');
+            return;
+        }
+
+        displayMsg.text('Logging in...').css('color', 'blue');
+        $('#login-btn').prop('disabled', true); //disabling login button to prevent more clicking
+
+        $.ajax({
+            url: '/cutlab/LoginProcess',
+            type: 'POST',
+            dataType: 'json',
+            data: 	{ 
+                        email: email,
+                        password: password
+                    },
+            success: function(response){
+            if(response && response.status == 'success'){
+                alert ("Login Successful.");
+                window.location.href = response.redirect;
+            }else{
+                displayMsg.text(response.message || 'Invalid Login Attempt!').css('color', 'red');
+                $('#login-btn').prop('disabled', false);
+            }
+           },
+           error: function(xhr){
+                alert('Server busy. Please try again later!');
+                $('#login-btn').prop('disabled', false);
+            }
+        });
+    });
+
+    // to submit signup form
+    $('#signup-btn').click(function(e) {
+        e.preventDefault();
+        const email = $('#signup-email').val().trim();
+        const code = $('#random-generated-code').val().trim();
+        const password = $('#signup-password').val().trim();
+        const confirmPass = $('#signup-confirm').val().trim();
+
+        const displayMsg = $('#password-signup-error-msg');
+
+        const validEmail = validateEmail(email);
+        const validPassword = validatePassword(password);
+        const validConfirm = confirmPassword(password, confirmPass);
+
+        if(!email){
+            displayMsg.text('Please enter the email first!').css('color', 'red');
+            return;
+        }
+        if(validEmail){
+            displayMsg.text(validEmail).css('color', 'red');
+            return;
+        }
+        if(!code){
+            displayMsg.text('Please enter the code first!').css('color', 'red');
+            return;
+        }
+        if (!/^\d{4}$/.test(code)){
+            displayMsg.text('Invalid Code!').css('color', 'red');
+            return;
+        }
+        if(!password){
+            displayMsg.text('Please enter the password first!').css('color', 'red');
+            return;
+        }
+        if(validPassword){
+            displayMsg.text(validPassword).css('color', 'red');
+            return;
+        }
+        if(!confirmPass){
+            displayMsg.text('Please re enter the password!').css('color', 'red');
+            return;
+        }
+        if(validConfirm){
+            displayMsg.text(validConfirm).css('color', 'red');
+            return;
+        }
+
+        displayMsg.text('Please Wait...').css('color', 'blue');
+        $('#signup-btn').prop('disabled', true); //disabling signup button to prevent more clicking
+
+        verifyCode(code, email, displayMsg, function(success){
+            if(success){
+                $.ajax({
+                    url: '/cutlab/SignupProcess',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: 	{ 
+                                email: email,
+                                password: password,
+                                confirmPass: confirmPass,
+                                actionType: "CreateAccount"
+                            },
+                    success: function(response){
+                    if(response && response.status == 'success'){
+                        alert ("Successfully Registered!");
+                        window.location.href = response.redirect;
+                    }else{
+                        displayMsg.text(response.message || 'Invalid Data!').css('color', 'red');
+                        $('#signup-btn').prop('disabled', false);
+                    }
+                   },
+                   error: function(xhr){
+                        alert('Server busy. Please try again later!');
+                        $('#signup-btn').prop('disabled', false);
+                    }
+                });
+            }else{
+                displayMsg.text('Please verify email first!').css("color", "red");
+                return;
+            }
+        });
+    });
+
+});
 
 
-//to change the content of sign up form (prev and next)
-function toggleContentOfSignupForm(page){
 
-    var firstContent = document.getElementById('email-part');
-    var secondContent = document.getElementById('password-part');
-    
-    firstContent.style.display= 'none';
-  	secondContent.style.display= 'none';
-  
-    if(page == 'email-page'){
-    	secondContent.style.display= 'block';
-    }else{
-    	firstContent.style.display= 'block';
-    }
-  
-}
 
-function signupStatus(message){
-	alert(message);
-	window.location.href = "http://localhost:8080/cutlab/login.html";
-}
+

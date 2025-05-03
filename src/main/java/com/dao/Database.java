@@ -106,31 +106,31 @@ public class Database {
 		return false;
     }
 	
-	public String returnName(String email) {
-		String fname="";
-		String query = "SELECT fname as name FROM users WHERE email = ?";
-
-        try (Connection conn = dbConnectionObject();
-             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            
-            preparedStatement.setString(1, email);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                	fname= resultSet.getString("name");	 
-                	conn.close();
-	                return fname;
-                }
-            }
-        } catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return fname;
-	}
+//	public String returnName(String email) {
+//		String fname="";
+//		String query = "SELECT fname as name FROM users WHERE email = ?";
+//
+//        try (Connection conn = dbConnectionObject();
+//             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+//            
+//            preparedStatement.setString(1, email);
+//            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+//                if (resultSet.next()) {
+//                	fname= resultSet.getString("name");	 
+//                	conn.close();
+//	                return fname;
+//                }
+//            }
+//        } catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		return fname;
+//	}
 
 	public int returnId(String email) {
 		int id;
@@ -159,10 +159,21 @@ public class Database {
 	}
 	
 	// forget password and changing password
-	public boolean updatePassword() { 
+	public boolean updatePassword(User user) throws ClassNotFoundException, SQLException { 
+		Connection conn = dbConnectionObject();
+		String query = "update users set password=?, salt=? where email=?";
+		PreparedStatement preparedStatement = conn.prepareStatement(query);
+		preparedStatement.setString(1, user.getPassword());
+		preparedStatement.setString(2, user.getSalt());
+		preparedStatement.setString(3, user.getEmail());
 		
+		int status=preparedStatement.executeUpdate();
+		conn.close();
 		
-		
-		return true;
+		if(status !=0) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 }

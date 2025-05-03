@@ -2,8 +2,11 @@ package com.cutlab;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.dao.Database;
+import com.dao.Utility;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,7 +14,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.net.URLEncoder;
 
 
 @WebServlet("/LoginProcess")
@@ -20,11 +22,11 @@ public class LoginProcess extends HttpServlet {
        
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String email = request.getParameter("login-email");
-        String password = request.getParameter("login-password");
+        Map<String, String> jsonResponse = new HashMap<>();
+        
+		String email = request.getParameter("email").trim();        
+        String password = request.getParameter("password").trim();
         Database db= new Database();
-//        RequestDispatcher rd = request.getRequestDispatcher("login.html");
-//        request.setAttribute("email", email);
         try {
 			if (db.checkIfEmailAlreadyExists(email)) {
 				if(db.doesEmailAndPasswordMatch(email, password)) {
@@ -35,7 +37,6 @@ public class LoginProcess extends HttpServlet {
 	                }
 	                HttpSession newSession = request.getSession(true);
 	                newSession.setAttribute("loginStatus", true);
-	                newSession.setAttribute("fname", db.returnName(email));
 	                
 	                if(db.returnId(email) > 0) {
 	                	newSession.setAttribute("user_id", db.returnId(email));
@@ -43,23 +44,32 @@ public class LoginProcess extends HttpServlet {
 	                	newSession.setAttribute("user_id", "Not Found");
 	                }
 	                newSession.setMaxInactiveInterval(60 * 60); //session timeout (1 hour)
-	                response.sendRedirect("welcome.html"); // Redirect if login is successful
+	                jsonResponse.put("status", "success");
+	            	jsonResponse.put("redirect", "welcome.html");  // Redirect if login is successful
+	            	
+	            	Utility.sendJsonResponse(response, jsonResponse);
+	                return;
 				}else {
-//					request.setAttribute("errorMsg", "Email and Password does not match.");
-//			        rd.forward(request, response);
-					
-					response.sendRedirect("login.html?error=" + URLEncoder.encode("password", "UTF-8"));
-//					response.sendRedirect("login.html?error=password");
+					jsonResponse.put("status", "fail");
+		        	jsonResponse.put("message", "Email and Password does not match!");
+		        	Utility.sendJsonResponse(response, jsonResponse);
+		        	return;
 				}
 			} else {
-//				request.setAttribute("errorMsg", "Invalid credentials.");
-//			    rd.forward(request, response);
-				response.sendRedirect("login.html?error="+ URLEncoder.encode("invalidEmail", "UTF-8"));
+				jsonResponse.put("status", "fail");
+	        	jsonResponse.put("message", "Invalid Credentials!");
+	        	Utility.sendJsonResponse(response, jsonResponse);
+	        	return;
 			}
 		} catch (ClassNotFoundException | SQLException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+            jsonResponse.put("status", "error");
+            jsonResponse.put("message", "Server error, please try again later.");
+            Utility.sendJsonResponse(response, jsonResponse);
 		}
+        
     }
+	
+	
 
 }

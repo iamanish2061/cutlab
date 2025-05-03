@@ -2,9 +2,12 @@ package com.cutlab;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import com.dao.Database;
+import com.dao.Utility;
 
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.Authenticator;
@@ -36,45 +39,69 @@ public class SendEmail extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
+        Map<String, String> jsonResponse = new HashMap<>();
+    	
+        String email = request.getParameter("email").trim();
+        String flag = request.getParameter("flag").trim();
+        
     	Database db = new Database();
-    	String email = request.getParameter("email");
-    	response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
     	try {
-			if(db.checkIfEmailAlreadyExists(email)) {
-				response.getWriter().write("{\"status\":\"fail\", \"message\":\"Email already exist!\"}");
+			if(db.checkIfEmailAlreadyExists(email) && flag.equalsIgnoreCase("CreateAccount")) {
+				jsonResponse.put("status", "fail");
+	        	jsonResponse.put("message", "Email Already Exist!");
+	        	Utility.sendJsonResponse(response, jsonResponse);
+	        	return;
+			}else if( !(db.checkIfEmailAlreadyExists(email)) && flag.equalsIgnoreCase("ResetPassword")) {
+				jsonResponse.put("status", "fail");
+	        	jsonResponse.put("message", "Email not found!");
+	        	Utility.sendJsonResponse(response, jsonResponse);
+	        	return;
 			}else {
 				Integer code = (int)(Math.random() * 9000) + 1000;
 		        System.out.println("Generated verification code: " + code);
 
-		        boolean emailSent = sendVerificationEmail(email, code);
+		        boolean emailSent = sendVerificationEmail(email, code, flag);
 
 		        if (emailSent) {
-		        	HttpSession session = request.getSession();
+		        	HttpSession oldSession = request.getSession(false);
+	                if (oldSession != null) {
+	                    oldSession.invalidate();
+	                }
+	                HttpSession newSession = request.getSession(true);
+		        	newSession.setAttribute("verificationCode", code.toString());
+		        	newSession.setAttribute("verificationEmail", email);
 		        	
-		        	session.setAttribute("verificationCode", code.toString());
-		        	session.setAttribute("verificationEmail", email);
-		            response.getWriter().write("{\"status\":\"success\"}");
+		        	jsonResponse.put("status", "success");
+		        	jsonResponse.put("message", "Verification code sent!");
+		        	Utility.sendJsonResponse(response, jsonResponse);
+		        	return;
 		        } else {
 		            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to send verification email");
 		        }
 			}
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			jsonResponse.put("status", "error");
+        	jsonResponse.put("message", "Server error, please try again later.");
+        	Utility.sendJsonResponse(response, jsonResponse);
+		} 
     	
         
     }
 
-    private boolean sendVerificationEmail(String email, int code) {
+    private boolean sendVerificationEmail(String email, int code, String type) {
     	boolean flag=false;
     	try {
             String to = email;
-            String subject = "Confirmation Email for Creating Account";
+            String subject="";
+            if(type.equalsIgnoreCase("CreateAccount")) {
+            	subject = "Confirmation Email for Creating Account";
+            }else if(type.equalsIgnoreCase("ResetPassword")){
+            	subject = "Confirmation Email to Reset Account's Password";
+            }else {
+            	subject = "Confirmation Mail";
+            }
+            
             String body = "This email was sent for confirmation! Your code is: " + code + " . Please do not share it with others.";
 
             // 1. Setup SMTP properties
@@ -126,5 +153,7 @@ public class SendEmail extends HttpServlet {
         }
         return flag;
     }
+    
+   
 }
 
