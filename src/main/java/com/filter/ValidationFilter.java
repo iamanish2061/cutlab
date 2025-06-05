@@ -15,7 +15,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebFilter(urlPatterns = {"/LoginProcess", "/SignupProcess", "/SendEmail", "/VerifyEmail"})
+@WebFilter(urlPatterns = {"/LoginProcess", "/SignupProcess", "/SendEmail", "/VerifyEmail", "/products", "/cart"})
 public class ValidationFilter implements Filter {
 
 	@Override
@@ -24,12 +24,17 @@ public class ValidationFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest)req;
 		HttpServletResponse response = (HttpServletResponse)res;
 		
-		HashMap<String, String> jsonResponse = new HashMap<>();
+		HashMap<String, Object> jsonResponse = new HashMap<>();
 		
+		//login and signup
 		String email = request.getParameter("email");
 		String password =  request.getParameter("password");
+		
 		String confirmPass = request.getParameter("confirmPass");
+		
+		//verifyEmail ko 
 		String code = request.getParameter("code");
+		
 		String flag =request.getParameter("flag");
 		String actionType = request.getParameter("actionType");
 		
@@ -83,6 +88,65 @@ public class ValidationFilter implements Filter {
 				Utility.sendJsonResponse(response, jsonResponse);
 				return;
 			}
+		}
+		
+		
+		//product validations ko lagi
+		String action= request.getParameter("action");
+		String query = request.getParameter("query");
+		String productId = request.getParameter("productId"); 
+		String updatedQuantity = request.getParameter("change"); 
+				
+		if(action!= null) {
+			String actionError = Validation.validateAction(action);
+			if(!actionError.isEmpty()) {
+	        	jsonResponse.put("status", "fail");
+	        	jsonResponse.put("message", actionError);
+	        	
+	        	Utility.sendJsonResponse(response, jsonResponse);
+	        	return;
+	        }
+			
+			if(query !=null) {
+				String queryError = Validation.validateQuery(query);
+				if(!queryError.isEmpty()) {
+		        	jsonResponse.put("status", "fail");
+		        	jsonResponse.put("message", queryError);
+		        	
+		        	Utility.sendJsonResponse(response, jsonResponse);
+		        	return;
+		        }
+			}
+			
+			if(productId !=null) {
+				String productIdError = Validation.validateProductId(productId);
+				if(!productIdError.isEmpty()) {
+		        	jsonResponse.put("status", "fail");
+		        	jsonResponse.put("message", productIdError);
+		        	
+		        	Utility.sendJsonResponse(response, jsonResponse);
+		        	return;
+		        }
+			}
+		}else {
+			if(query !=null || productId!=null) {
+				jsonResponse.put("status", "fail");
+	        	jsonResponse.put("message", "Invalid Attempt!");
+	        	
+	        	Utility.sendJsonResponse(response, jsonResponse);
+	        	return;
+			}
+		}
+		
+		if(productId != null && updatedQuantity != null) {
+			String error = Validation.validateChangedQuantity(productId, updatedQuantity);
+			if(!error.isEmpty()) {
+	        	jsonResponse.put("status", "fail");
+	        	jsonResponse.put("message", error);
+	        	
+	        	Utility.sendJsonResponse(response, jsonResponse);
+	        	return;
+	        }
 		}
 		
 		chain.doFilter(request, response);

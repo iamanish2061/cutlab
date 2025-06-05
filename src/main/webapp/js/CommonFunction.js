@@ -132,8 +132,32 @@ function verifyCode(code, email, displayErrorMsg, callback){
     });
 }
 
-function submitSignupInfo(){
-    
+function validateIdOrQuantity(num){
+    let pattern = /^\d+$/;
+    if (num == null || !pattern.test(num) || num<0) {
+        return false;
+    }else{
+        return true;
+    }
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function updateCartButton(productId) {
+    const cartBtn = document.getElementById('cart');
+    fetch(`/cutlab/products?action=check&productId=${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            const buttonText = data.inCart ? "View Cart" : "Add to Cart";
+            cartBtn.textContent = buttonText;
+            sessionStorage.setItem(`cartButtonState_${productId}`, buttonText);
+        })
+        .catch(error => console.error('Error checking cart:', error));
 }
 
 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="css/products.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" 
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" 
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <script src="js/CommonFunction.js"></script>
+    <nav class="navbar" id="navbar">
+        <!-- code of navbar -->
+    </nav>
+    
+    <header class="product-header">
+        <a href="products.html" class="back-btn">← All Products</a>
+        <h1 id="productTitle">Product Details</h1>
+    </header>
+
+    <main class="product-details-container">
+        <div class="product-main">
+            <div class="product-image-container">
+                <img id="productImage" src="" alt="Product Image" class="zoomable">
+            </div>
+
+            <div class="product-info">
+                <h2 id="productName"></h2>
+                <div class="product-description">
+                    <h3>Description</h3>
+                    <p id="productDescription"></p>
+                </div>
+                
+                <div class="ingredients-section">
+                    <h3>Ingredients</h3>
+                    <ul id="ingredientsList"></ul>
+                </div>
+
+                <div class="price" id="productPrice"></div>
+                <div class="brand" id="productBrand"></div>
+                <div class="stock" id="productStock"></div>
+                <button class="add-to-cart" id="cart">Add to Cart</button>
+            
+            </div>
+        </div>
+
+
+        <div class="recommendations">
+            <h3>You May Also Like</h3>
+            <div class="recommended-products" id="recommendedProducts"></div>
+        </div>
+    </main>
+    <div id="toast" class="toast">Added to cart successfully!</div>
+
+    
+    <script src="js/singleProduct.js"></script>
+    <script>
+        $("#navbar").load("includes/navbar.html");
+      </script>
+</body>
+</html>

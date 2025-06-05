@@ -27,6 +27,6 @@
     <servlet-name>haha</servlet-name>
     <servlet-class>com.cutlab.haha</servlet-class>
   </servlet>
-  
+
   
 </web-app>

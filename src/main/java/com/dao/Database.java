@@ -6,17 +6,21 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Database {
 	
 	public Connection dbConnectionObject() throws ClassNotFoundException, SQLException {
 		 Class.forName("com.mysql.cj.jdbc.Driver");
-	     System.out.println("Driver loaded");
 	 
 	     // Establish a connection
 	     Connection connection = DriverManager.getConnection("jdbc:mysql://root:anish2061@localhost:3306/ecommerce");
-	     System.out.println("Database connected");
 	     
 	     return connection;
 	     	
@@ -24,21 +28,17 @@ public class Database {
 	
 	public boolean insertSignupData(User user) throws ClassNotFoundException, SQLException {
 		
-		Connection conn = dbConnectionObject();
 		String query = "insert into users(email, password, salt) values(?,?,?)";
-		PreparedStatement preparedStatement = conn.prepareStatement(query);
-		preparedStatement.setString(1, user.getEmail());
-		preparedStatement.setString(2, user.getPassword());
-		preparedStatement.setString(3, user.getSalt());
-		
-		int status=preparedStatement.executeUpdate();
-		conn.close();
-		
-		if(status !=0) {
-			return true;
-		}else {
-			return false;
+		try(Connection conn = dbConnectionObject();
+		PreparedStatement preparedStatement = conn.prepareStatement(query)){
+			preparedStatement.setString(1, user.getEmail());
+			preparedStatement.setString(2, user.getPassword());
+			preparedStatement.setString(3, user.getSalt());
+			
+			int affectedRows=preparedStatement.executeUpdate();
+			return affectedRows>0;
 		}
+		
 	}
 	
 	public boolean checkIfEmailAlreadyExists(String email) throws SQLException, ClassNotFoundException {
@@ -51,32 +51,27 @@ public class Database {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     int count = resultSet.getInt("totalEmail");
-                    conn.close();
-                    return count > 0; // If count > 0, email exists
+                    return count > 0; 
                 }
             }
         }
         
         return false; // Default return if no email is found
     }
-	
-	public boolean checkIfNumberAlreadyExists(String num) throws SQLException, ClassNotFoundException {
-        String query = "SELECT COUNT(*) AS totalNum FROM users WHERE phoneNumber = ?";
 
-        try (Connection conn = dbConnectionObject();
-             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            
-            preparedStatement.setString(1, num);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int count = resultSet.getInt("totalNum");
-                    conn.close();
-                    return count > 0; // If count > 0, number exists
-                }
-            }
-        }
-        return false; // Default return if no number is found
-    }
+	public boolean checkIfNumberAlreadyExists(String num) throws SQLException, ClassNotFoundException {
+	    String query = "SELECT 1 FROM users WHERE phoneNumber = ? LIMIT 1";
+	    
+	    try (Connection conn = dbConnectionObject();
+	         PreparedStatement ps = conn.prepareStatement(query)) {
+	        
+	        ps.setString(1, num.trim());
+	        
+	        try (ResultSet rs = ps.executeQuery()) {
+	            return rs.next(); // Returns true if a record exists
+	        }
+	    }
+	}
 	
 	public boolean doesEmailAndPasswordMatch(String email, String password) throws SQLException, ClassNotFoundException {
         String query = "SELECT password, salt FROM users WHERE email = ?";
@@ -97,7 +92,6 @@ public class Database {
 	                String enteredHashedPassword = User.hashPassword(password, saltBytes);
 
 	                // Compare stored hash with the new hash
-	                conn.close();
 	                return dbHashedPassword.equals(enteredHashedPassword);
                 	
                 }
@@ -133,7 +127,7 @@ public class Database {
 //	}
 
 	public int returnId(String email) {
-		int id;
+		int id = -1;
 		String query = "SELECT user_id as id FROM users WHERE email = ?";
 
         try (Connection conn = dbConnectionObject();
@@ -143,37 +137,411 @@ public class Database {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                 	id= resultSet.getInt("id");	   
-                	conn.close();
-	                return id;
                 }
             }
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
-		return -1;
+		return id;
 	}
 	
 	// forget password and changing password
 	public boolean updatePassword(User user) throws ClassNotFoundException, SQLException { 
-		Connection conn = dbConnectionObject();
 		String query = "update users set password=?, salt=? where email=?";
-		PreparedStatement preparedStatement = conn.prepareStatement(query);
-		preparedStatement.setString(1, user.getPassword());
-		preparedStatement.setString(2, user.getSalt());
-		preparedStatement.setString(3, user.getEmail());
 		
-		int status=preparedStatement.executeUpdate();
-		conn.close();
-		
-		if(status !=0) {
-			return true;
-		}else {
-			return false;
+		try(Connection conn = dbConnectionObject();
+		PreparedStatement preparedStatement = conn.prepareStatement(query)){
+			preparedStatement.setString(1, user.getPassword());
+			preparedStatement.setString(2, user.getSalt());
+			preparedStatement.setString(3, user.getEmail());
+			
+			int affectedRows=preparedStatement.executeUpdate();
+			return affectedRows>0;
 		}
+				
 	}
+	
+	
+	//product page bata display garna ko lagi database query haru
+	public List<Products> getAllProducts() throws SQLException, ClassNotFoundException {
+        List<Products> products = new ArrayList<>();
+        String query = "SELECT product_id, name, description, price,  image_url, stock_quantity  FROM products";
+        
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                Products product = new Products();
+                product.setId(rs.getInt("product_id"));
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setPrice(rs.getDouble("price"));
+                product.setUrl(rs.getString("image_url"));
+                product.setStock(rs.getInt("stock_quantity"));
+                
+                products.add(product);
+            }
+        }
+        return products;
+    }
+	
+	public List<String> getCategories() throws SQLException, ClassNotFoundException {
+        List<String> categories = new ArrayList<>();
+        String query = "SELECT name FROM categories";
+        
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                categories.add(rs.getString("name"));
+            }
+        }
+        return categories;
+    }
+	
+	//category
+	public List<Products> searchProductsAccordingCategory(String category) throws SQLException, ClassNotFoundException {
+        List<Products> products = new ArrayList<>();
+        String query = "SELECT p.product_id as id, p.name, p.description, p.price,  p.image_url, p.stock_quantity "
+        		+ "FROM products p "
+        		+ "JOIN categories c ON p.category_id = c.category_id "
+        		+ " WHERE c.name = ?";
+
+        try (Connection conn = dbConnectionObject();
+            PreparedStatement ps = conn.prepareStatement(query)){
+        		ps.setString(1, category);
+        	
+				try(ResultSet rs = ps.executeQuery()) {
+	                while (rs.next()) {
+	                	
+	                	Products product = new Products();
+	                    product.setId(rs.getInt("id"));
+	                    product.setName(rs.getString("name"));
+	                    product.setDescription(rs.getString("description"));
+	                    product.setPrice(rs.getDouble("price"));
+	                    product.setUrl(rs.getString("image_url"));
+	                    product.setStock(rs.getInt("stock_quantity"));
+	                    	                    
+	                    products.add(product);
+	                }
+	            }
+        }
+        return products;
+	}
+
+	//search
+	public List<Products> searchProducts(String search) throws SQLException, ClassNotFoundException {
+        List<Products> products = new ArrayList<>();
+        String[] keywords = search.split("\\s+"); // Split by spaces
+
+        StringBuilder query = new StringBuilder("SELECT product_id as id, name, description, price,  image_url, stock_quantity  FROM products WHERE (");
+        for (int i = 0; i < keywords.length; i++) {
+            if (i > 0) query.append(" OR ");
+            query.append("name LIKE ?");
+        }
+        query.append(")");
+
+        try (Connection conn = dbConnectionObject();
+            PreparedStatement ps = conn.prepareStatement(query.toString())){
+	        	for (int i = 0; i < keywords.length; i++) {
+	        	    ps.setString(i + 1, "%" + keywords[i] + "%");
+	        	}
+
+				try(ResultSet rs = ps.executeQuery()) {
+	                while (rs.next()) {
+	                	
+	                	Products product = new Products();
+	                    product.setId(rs.getInt("id"));
+	                    product.setName(rs.getString("name"));
+	                    product.setDescription(rs.getString("description"));
+	                    product.setPrice(rs.getDouble("price"));
+	                    product.setUrl(rs.getString("image_url"));
+	                    product.setStock(rs.getInt("stock_quantity"));
+	                    	                    
+	                    products.add(product);
+	                }
+	            }
+        	}
+        return products;
+	}
+	
+	//details about one product
+	public Products getDetailsOfProduct(int productId) throws SQLException, ClassNotFoundException {
+		
+		String query= "SELECT p.product_id, p.name AS productName, p.description AS productDescription, p.price, p.image_url, p.stock_quantity, "
+				+ "b.name as brandName, b.description as brandDescription, b.is_vegan, "
+				+ "i.name AS ingredientName "
+				+ "FROM products p "
+				+ "JOIN brands b ON p.brand_id=b.brand_id "
+				+ "JOIN product_ingredients pi ON p.product_id = pi.product_id "
+				+ "JOIN ingredients i ON pi.ingredient_id = i.ingredient_id "
+				+ "WHERE p.product_id = ?";
+		
+		Products product = null;
+		Set<String> addedIngredients = new HashSet<>(); 
+
+		try (Connection conn = dbConnectionObject();
+	            PreparedStatement ps = conn.prepareStatement(query)){
+	        		ps.setInt(1, productId);
+	        	
+					try(ResultSet rs = ps.executeQuery()) {
+						while (rs.next()) {
+						    if (product == null) {
+						        product = new Products();
+						        product.setId(rs.getInt("product_id"));
+						        product.setName(rs.getString("productName"));
+						        product.setDescription(rs.getString("productDescription"));
+						        product.setPrice(rs.getDouble("price"));
+						        product.setUrl(rs.getString("image_url"));
+						        product.setStock(rs.getInt("stock_quantity"));
+
+						        Brands brand = new Brands();
+						        brand.setName(rs.getString("brandName"));
+						        brand.setDescription(rs.getString("brandDescription"));
+						        brand.setIs_vegan(rs.getBoolean("is_vegan"));
+						        product.setBrand(brand);
+
+						        product.setIngredients(new ArrayList<>());
+						    }
+
+						    String ingredientName = rs.getString("ingredientName");
+						    if (ingredientName != null && !addedIngredients.contains(ingredientName)) {
+						        product.getIngredients().add(ingredientName);
+						        addedIngredients.add(ingredientName);
+						    }
+						}
+		            }
+	        }
+		
+		return product;
+	}
+	
+// recommendations
+    public List<Products> getRecommendedProducts(int productId) throws SQLException, ClassNotFoundException {
+        List<Products> recommendations = new ArrayList<>();
+        List <String> tags= new ArrayList<>();
+        String query = "SELECT t.name FROM tags t "
+        		+ "JOIN product_tags p ON t.tag_id=p.tag_id "
+        		+ "WHERE p.product_id = ?";
+        
+        try (Connection conn = dbConnectionObject();
+            PreparedStatement ps = conn.prepareStatement(query)) {
+        	ps.setInt(1, productId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    tags.add(rs.getString("name"));                
+                }
+            }
+        }
+        if (tags.isEmpty()) return recommendations;
+        
+        String[] keywords = tags.toArray(new String[0]);
+
+        StringBuilder recommendQuery = new StringBuilder("SELECT DISTINCT p.product_id as id, p.name, p.description, p.price,  p.image_url, p.stock_quantity  FROM products p "
+        		+ "JOIN product_tags pt ON p.product_id=pt.product_id "
+        		+ "JOIN tags t ON t.tag_id=pt.tag_id "
+        		+ "WHERE (");
+        for (int i = 0; i < keywords.length; i++) {
+            if (i > 0) recommendQuery.append(" OR ");
+            recommendQuery.append("t.name LIKE ?");
+        }
+        recommendQuery.append(") AND p.product_id != ?");
+
+
+        try (Connection conn = dbConnectionObject();
+            PreparedStatement ps = conn.prepareStatement(recommendQuery.toString())){
+	        	for (int i = 0; i < keywords.length; i++) {
+	        	    ps.setString(i + 1, "%" + keywords[i] + "%");
+	        	}
+	        	ps.setInt(keywords.length +1, productId);
+
+				try(ResultSet rs = ps.executeQuery()) {
+	                while (rs.next()) {
+	                	Products product = new Products();
+	                    product.setId(rs.getInt("id"));
+	                    product.setName(rs.getString("name"));
+	                    product.setDescription(rs.getString("description"));
+	                    product.setPrice(rs.getDouble("price"));
+	                    product.setUrl(rs.getString("image_url"));
+	                    product.setStock(rs.getInt("stock_quantity"));
+	                    	                    
+	                    recommendations.add(product);
+	                }
+	            }
+        	}
+        return recommendations;
+    }
+    
+    
+    
+    // cart ko db haru
+//    add to cart ko add garda first time ho ki haina check garney
+    public int checkQuantity(int p_id, int u_id) {
+    	int qty =-1;
+		String query = "SELECT quantity from cart WHERE product_id= ? AND user_id=?";
+
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, p_id);
+            preparedStatement.setInt(2, u_id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                	qty= resultSet.getInt("quantity");	   
+                }
+            }
+        } catch (ClassNotFoundException |SQLException e) {
+			e.printStackTrace();
+		} 
+    	
+    	return qty;
+    }
+    
+    //inserting to cart for the new product
+    public boolean insertIntoCart(int productId, int userId) throws SQLException, ClassNotFoundException{
+		String query = "INSERT INTO cart(product_id, user_id, quantity) VALUES(?, ?, ?)";
+		
+		try(Connection conn = dbConnectionObject();
+		PreparedStatement ps = conn.prepareStatement(query)){
+			ps.setInt(1, productId);
+			ps.setInt(2, userId);
+			ps.setInt(3, 1);
+			
+			int affectedRows = ps.executeUpdate();
+	        return affectedRows > 0;
+		}
+		
+    }
+    
+ //before updating and deleting checking in cart if product exists
+    public boolean checkIfProductExistInCart(int productId, int userId) {
+        String query = "SELECT 1 FROM cart WHERE product_id = ? AND user_id = ? LIMIT 1";
+        
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setInt(1, productId);
+            ps.setInt(2, userId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // Returns true if product exists in cart
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println("Error checking cart: " + e.getMessage());
+            return false; // Default return on error
+        }
+    }
+    
+    //update garda ko
+    public boolean updateCart(int productId, int userId, int qty) throws SQLException, ClassNotFoundException{
+    	String query = "UPDATE cart SET quantity= ? WHERE product_id= ? AND user_id=?";
+
+    	try(Connection conn = dbConnectionObject();
+		PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setInt(1, qty);
+    		ps.setInt(2, productId);
+    		ps.setInt(3, userId);
+    		
+    		int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+    	}
+		
+    }
+    
+  //delete garda ko
+    public boolean deleteFromCart(int productId, int userId) throws SQLException, ClassNotFoundException {
+        String query = "DELETE FROM cart WHERE product_id = ? AND user_id = ?";
+        
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setInt(1, productId);
+            ps.setInt(2, userId);
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
+    
+    //returning the product_id present in cart
+    public Map<Integer, Integer> getProductsFromCart(int userId) {
+        Map	<Integer, Integer> productList = new HashMap<>();
+        String query = "SELECT product_id, quantity FROM cart WHERE user_id = ?";
+        
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setInt(1, userId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    productList.put(rs.getInt("product_id"), rs.getInt("quantity"));
+                }
+            }
+            
+            
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println("Error retrieving cart products: " + e.getMessage());
+        }
+        return productList;
+    }
+    
+    //checking remaining stock from product table
+    public int checkRemainingQuantity(int p_id) {
+    	int stock =-1;
+    	String query = "SELECT stock_quantity FROM products WHERE product_id = ? LIMIT 1";
+        
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setInt(1, p_id);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+            	 if (rs.next()) {
+                     stock = rs.getInt("stock_quantity");
+                     if (rs.wasNull()) {
+                         stock = -1;
+                     }
+                 }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println("Error checking cart: " + e.getMessage());
+        }
+    	return stock;
+    }
+      
+    
+    //checkout maa use vako daatabases query haru
+    //total amount return garney function checkout.html load huda dekhanuney
+    
+    public float getTotalAmountOfCart(int userId) {
+    	float total = 0;
+    	
+    	String query = "SELECT p.price, c.quantity from cart c "
+    			+ "JOIN products p ON c.product_id=p.product_id "
+    			+"WHERE c.user_id= ?";
+
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                	int qty= resultSet.getInt("quantity");	  
+                	float price = resultSet.getFloat("price");
+                	total+= (qty*price);
+                }
+            }
+        } catch (ClassNotFoundException |SQLException e) {
+			e.printStackTrace();
+		} 
+    	
+    	return total;
+    }
+    
+    
 }

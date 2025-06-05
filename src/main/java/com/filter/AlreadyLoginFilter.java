@@ -24,7 +24,7 @@ public class AlreadyLoginFilter implements Filter {
 		HttpSession s= request.getSession(false);
 		
 		if(s != null && s.getAttribute("loginStatus") != null && s.getAttribute("user_id") != null) {
-			response.sendRedirect("welcome.html");	
+			response.sendRedirect("products.html");	
 		}else {
 			chain.doFilter(request, response);			
 		}			

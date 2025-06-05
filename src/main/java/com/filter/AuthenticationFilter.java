@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebFilter(urlPatterns = {"/welcome.html", "/cart.html", "/checkout.html"})
+@WebFilter(urlPatterns = {"/logout.html", "/signupAdditional.html", "/profile.html", "/checkout.html", "/AddCart.html"})
 public class AuthenticationFilter implements Filter {
 
 	@Override
@@ -32,3 +32,9 @@ public class AuthenticationFilter implements Filter {
 	}
 
 }
+
+//profile maa chai signupadditional ni huna parxa 
+//signup add garesi name session maa rakhesi balla valid hunxa ani profile maa laney navaye 
+//loggedin status xaina vane login.html maa redirect
+// name ko lagi signupAdditional maa redirect
+//check out maa jada cart maa huna parxa

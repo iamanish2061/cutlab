@@ -1,6 +1,10 @@
 package com.dao;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Validation {
+	
 	public static String validateEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         if (email == null || email.trim().isEmpty()) {
@@ -31,4 +35,129 @@ public class Validation {
 	}
 	
 	
+	//product ko lagi validations
+	
+	public static String validateAction(String action) {
+		List<String> actionList = Arrays.asList("search", "category", "specificproduct", "check", "add", "remove", "get", "update");
+
+		if(actionList.contains(action.toLowerCase())) {
+			return "";
+		}else {
+			return "Attempted to perform invalid action!";		
+		}
+	}
+	
+	 public static String validateQuery(String query) {
+        if (query.trim().isEmpty()) {
+            return "Search query or category parameter is required!";
+        }else {
+        	return "";
+        }
+	 }
+
+	 public static String validateProductId(String productId) {
+		    if (productId.trim().isEmpty()) {
+		        return "Product ID parameter is required!";
+		    }
+		    
+		    try {
+		        Integer.parseInt(productId);
+		    } catch (NumberFormatException e) {
+		        return "Product ID must be a valid number!";
+		    }
+		    
+		    return "";
+		}
+	 
+	 public static String validateChangedQuantity(String p_id, String changedQty) {
+		 Database db = new Database();
+		    if (changedQty.trim().isEmpty()) {
+		        return "Quantity parameter is required!";
+		    }
+		    
+		    try {
+		        Integer.parseInt(changedQty);
+		    } catch (NumberFormatException e) {
+		        return "Quantity must be a valid number!";
+		    }
+		    
+		    int stock = db.checkRemainingQuantity(Integer.parseInt(p_id));
+		    
+		    if(Integer.parseInt(changedQty) <=0 || Integer.parseInt(changedQty)>stock) {
+		    	return "Invalid Quantity!";
+		    }
+		    
+		    return "";
+		}
+	
+	 //shipping details ko laagi validation
+	 public static String validateFullName(String fullName) {
+	    String pattern = "^[a-zA-Z\s]+$";
+	    if (fullName.length() < 5) {
+	    	return "The full name cant be this short!";
+	    }
+	    if(!fullName.matches(pattern)) {
+	    	return "Please enter a valid full name without any numbers or special characters!";
+	    }
+	    return "";
+	 }
+
+	 public static String validateAddress(String address) {
+	    String pattern = "^[a-zA-Z0-9\s,.'-]{5,}$";
+	    if (address.length() < 5) {
+	    	return "The address should be at least 5 characters!";
+	    }
+	    if (!address.matches(pattern)) {
+	        return "Please enter a valid address!";
+	    }
+	    return "";
+	 }
+	 
+	 public static String validateCity(String city) {
+	    String pattern = "^[a-zA-Z\s]+$";
+	    if (!city.matches(pattern)) {
+	        return "Please enter a valid address!";
+	    }
+	    return "";
+	}
+
+	 public static String validateState(String state) {
+	    String pattern = "^[a-zA-Z\s]+$";
+	    if (!state.matches(pattern)) {
+	        return "Please enter a valid state name!";
+	    }
+	    return "";
+	 }
+
+	 public static String validateZip(String zip) {
+		String pattern = "^[0-9]{5,10}$";
+	    if (!zip.matches(pattern)) {
+	        return "Please enter a valid ZIP/Postal Code!";
+	    }
+	    return "";
+	 }
+
+	 public static String validatePhone(String phone) {
+		 String pattern = "^[9]{1}[0-9]{9}$";
+		    if (!phone.matches(pattern)) {
+		        return "Please enter a valid phone number starting with 9!";
+		    }
+		    return "";
+		}
+
+	 //email ko mathi nai xa ---
+	 
+	 public static String validatePayMethod(String payMethod) {
+		 
+		 if(payMethod.equalsIgnoreCase("esewa") || payMethod.equalsIgnoreCase("khalti")) {
+			 return "";
+		 }else {
+			 return "Invalid Payment Method!";
+		 }
+		 
+		 
+	 }
+	 
+	 
+	 //signup additional ko laagi
 }

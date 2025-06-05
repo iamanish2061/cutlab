@@ -39,7 +39,7 @@ public class SendEmail extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        Map<String, String> jsonResponse = new HashMap<>();
+        Map<String, Object> jsonResponse = new HashMap<>();
     	
         String email = request.getParameter("email").trim();
         String flag = request.getParameter("flag").trim();

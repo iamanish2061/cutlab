@@ -1,11 +1,46 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    <link rel="stylesheet" href="css/products.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" 
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" 
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-hi product
+    <nav class="navbar" id="navbar">
+        <!-- code of navbar -->
+    </nav>
+
+    <header class="main-header">
+        <h1>Our Products</h1>
+        <div class="header-actions">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <button id="searchBtn">Search</button>
+            </div>
+            <div class="category-filter">
+                <select id="categorySelect">
+                    <option value="">All Categories</option>
+                    <!-- Dynamically populated -->
+                </select>
+            </div>
+        </div>
+        
+    </header>
+
+    <main class="products-grid" id="productsContainer">
+        <!-- Products will be loaded here -->
+        <div class="loader">Loading products...</div>
+    </main>
+
+    <script src="js/products.js"></script>
+    <script>
+        $("#navbar").load("includes/navbar.html");
+      </script>
 </body>
 </html>

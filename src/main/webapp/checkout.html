@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+
+    <link rel="stylesheet" href="css/checkout.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" 
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" 
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <nav class="navbar" id="navbar"></nav>
+
+    <div class="form-container">  
+        <form class="shipping-details" id="shippingForm" method="POST" action="/cutlab/checkout">
+
+            <div class="shipping-form">
+                <h2>Shipping Information</h2>
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required >
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" placeholder="Street address" required>
+                    </div>
+                    <div class="form-group half">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" placeholder="City" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="state">State/Province</label>
+                        <input type="text" id="state" name="state" placeholder="State/Province" required >
+                    </div>
+                    <div class="form-group half">
+                        <label for="zip">ZIP/Postal Code</label>
+                        <input type="text" id="zip" name="zip" placeholder="ZIP/Postal Code" required >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="e.g. 9823000000" required >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="abc@gmail.com" required>
+                </div>
+            
+            </div>
+
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-item">
+                    <span>Subtotal</span>
+                    <span id="subtotal">NRs: 0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Shipping</span>
+                    <span>NRs: 100.00</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Total</span>
+                    <span id="total">NRs: 100.00</span>
+                </div>
+
+                <div class="pay-method">
+                    <h3>Pay With</h3>
+                    <div class="pay-options">
+                        <label>
+                            <input type="radio" name="pay_method" value="esewa" style="display:none;">
+                            <img src="images/esewa.jpg" alt="eSewa" class="pay-img" style="cursor:pointer; width:100px; border:2px solid transparent;">
+                        </label>
+                        <label>
+                            <input type="radio" name="pay_method" value="khalti" style="display:none;">
+                            <img src="images/khalti.jpg" alt="Khalti" class="pay-img" style="cursor:pointer; width:100px; border:2px solid transparent;">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="ship-btn-holder">
+                    <button type="submit" class="shipping-btn" id="shippingFormBtn">Pay Now</button>
+                </div>
+            </div>
+
+        </form>
+        <div class="error-shipping-msg" id="error-shipping-msg"></div>
+    </div>
+
+
+    <div id="toast" class="toast"></div>
+
+    <script src="js/Validations.js"></script>
+    <script src="js/checkout.js"></script>
+    <script>
+        $("#navbar").load("includes/navbar.html");
+
+         // Highlight selected image
+        $('.pay-options input[type="radio"]').change(function() {
+            $('.pay-options .pay-img').css('border', '2px solid transparent');
+            $(this).siblings('img').css('border', '2px solid #007bff');
+        });
+        // Make image clickable for radio
+        $('.pay-options .pay-img').on('click', function() {
+            $(this).siblings('input[type="radio"]').prop('checked', true).trigger('change');
+        });
+
+        // Custom validation for payment method
+        $('#shippingForm').on('submit', function(e) {
+            if (!$('input[name="pay_method"]:checked').val()) {
+                e.preventDefault();
+                $('#toast').text('Please select a payment method.').addClass('show');
+                setTimeout(function() {
+                    $('#toast').removeClass('show');
+                }, 3000);
+            }
+        });
+
+
+        
+    </script>
+</body>
+</html>

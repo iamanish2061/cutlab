@@ -9,11 +9,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class Utility {
 	
-	public static void sendJsonResponse(HttpServletResponse response, Map<String, String> jsonResponse) throws IOException {
+	public static void sendJsonResponse(HttpServletResponse response, Map<String, Object> jsonResponse) throws IOException {
 		response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         String json = new Gson().toJson(jsonResponse);
         response.getWriter().write(json);
     }
-	
+
 }
+ 

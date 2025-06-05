@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.dao.Database;
 import com.dao.Utility;
+import com.esewa.EsewaSignatureUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,7 +23,7 @@ public class LoginProcess extends HttpServlet {
        
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> jsonResponse = new HashMap<>();
+        Map<String, Object> jsonResponse = new HashMap<>();
         
 		String email = request.getParameter("email").trim();        
         String password = request.getParameter("password").trim();
@@ -45,7 +46,7 @@ public class LoginProcess extends HttpServlet {
 	                }
 	                newSession.setMaxInactiveInterval(60 * 60); //session timeout (1 hour)
 	                jsonResponse.put("status", "success");
-	            	jsonResponse.put("redirect", "welcome.html");  // Redirect if login is successful
+	            	jsonResponse.put("redirect", "products.html");  // Redirect if login is successful
 	            	
 	            	Utility.sendJsonResponse(response, jsonResponse);
 	                return;

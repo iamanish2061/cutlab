@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="css/addCart.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" 
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" 
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <script src="js/CommonFunction.js"></script>
+    <nav class="navbar" id="navbar"></nav>
+
+    <header class="cart-header">
+        <h1>Your Shopping Cart</h1>
+    </header>
+
+    <main class="cart-container">
+        <div class="cart-box" >
+            <div class="cart-heading">
+                <h3 class="cart-img-col">Image</h3>
+                <h3 class="cart-name-col">Name</h3>
+                <h3 class="cart-amt-col">Amount</h3>
+                <h3 class="cart-qty-col">Quantity</h3>
+                <h3 class="cart-total-col">Total</h3>
+            </div>
+
+            <div class="cart-items" id="cartItems">
+                
+            </div>
+
+        </div>
+
+        <div class="checkout-btn-container">
+            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="js/addCart.js"></script>
+    <script>
+        $("#navbar").load("includes/navbar.html");
+    </script>
+</body>
+</html>

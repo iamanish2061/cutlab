@@ -18,7 +18,7 @@ public class VerifyEmail extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> jsonResponse = new HashMap<>();
+        Map<String, Object> jsonResponse = new HashMap<>();
 		
 		HttpSession session = request.getSession(false); // false = don't create new session if doesn't exist
         if (session != null) {
