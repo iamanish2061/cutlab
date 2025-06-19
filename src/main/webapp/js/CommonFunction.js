@@ -196,31 +196,3 @@ function updateCartButton(productId) {
 
 
 
-//to verify number
-// $('#first-page-next').click(function(e){
-//     e.preventDefault();
-//     const phoneNumber = $('#signup-number').val();
-    
-//     $.ajax({
-//        url: '/cutlab/VerifyNumber',
-//        type: 'POST',
-//        data: 	{ 
-//                    number: phoneNumber 
-//                },
-//       success: function(response){
-//           if(response.status == 'success'){
-//             $('#first-signup-error-msg').text('Number is valid... Please wait!').css('color', 'green');
-            
-//             setTimeout(() => {
-//                 toggleContentOfSignupForm('first');
-//             }, 1500);
-            
-//                }else{
-//                $('#first-signup-error-msg').text(response.message).css('color', 'red');
-//                }
-//       },
-//       error: function(xhr){
-//           $('#first-signup-error-msg').text('Failed to check number. Please try again.').css('color', 'red');
-//       }
-//     });
-// });

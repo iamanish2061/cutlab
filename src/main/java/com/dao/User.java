@@ -45,7 +45,7 @@ public class User {
 		return dob;
 	}
 	public void setDob(String string) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	    this.dob = LocalDate.parse(string, formatter);
 	}
 	

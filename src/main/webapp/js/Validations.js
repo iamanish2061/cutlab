@@ -7,6 +7,18 @@ function validateFullName(fullName) {
     return "";
 }
 
+function validateFirstAndLastName(name, val) {
+    if (!val || val.trim() === "") {
+        return "Please enter a valid"+ name + " with more than 2 characters and only alphabet!";
+    }else{
+        const pattern = /^[a-zA-Z\s]+$/;
+        if (val.length < 2 || !pattern.test(val)) {
+            return "Please enter a valid "+ name + " with more than 2 characters and only alphabet!";
+        }
+        return "";
+    }
+}
+
 function validateAddress(address) {
     const pattern = /^[a-zA-Z0-9\s,.'-]{5,}$/;
     if (!pattern.test(address)) {
@@ -55,4 +67,18 @@ function validateEmail(email) {
     return "";
 }
 
-
+function validateDate(date){
+    const pattern = /^\d{4}-\d{2}-\d{2}$/;
+    if (!pattern.test(date)) {
+        return "Please enter a valid date in YYYY-MM-DD format!";
+    }
+    
+    const today = new Date();
+    const inputDate = new Date(date);
+    
+    if (inputDate > today) {
+        return "The date cannot be in the future!";
+    }
+    
+    return "";
+}

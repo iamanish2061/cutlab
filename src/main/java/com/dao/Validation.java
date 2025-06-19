@@ -1,7 +1,11 @@
 package com.dao;
 
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+
 
 public class Validation {
 	
@@ -92,7 +96,7 @@ public class Validation {
 	
 	 //shipping details ko laagi validation
 	 public static String validateFullName(String fullName) {
-	    String pattern = "^[a-zA-Z\s]+$";
+	    String pattern = "^[a-zA-Z\\s]+$";
 	    if (fullName.length() < 5) {
 	    	return "The full name cant be this short!";
 	    }
@@ -103,7 +107,7 @@ public class Validation {
 	 }
 
 	 public static String validateAddress(String address) {
-	    String pattern = "^[a-zA-Z0-9\s,.'-]{5,}$";
+	    String pattern = "^[a-zA-Z0-9\\s,.'-]{5,}$";
 	    if (address.length() < 5) {
 	    	return "The address should be at least 5 characters!";
 	    }
@@ -114,7 +118,7 @@ public class Validation {
 	 }
 	 
 	 public static String validateCity(String city) {
-	    String pattern = "^[a-zA-Z\s]+$";
+	    String pattern = "^[a-zA-Z\\s]+$";
 	    if (!city.matches(pattern)) {
 	        return "Please enter a valid address!";
 	    }
@@ -122,7 +126,7 @@ public class Validation {
 	}
 
 	 public static String validateState(String state) {
-	    String pattern = "^[a-zA-Z\s]+$";
+	    String pattern = "^[a-zA-Z\\s]+$";
 	    if (!state.matches(pattern)) {
 	        return "Please enter a valid state name!";
 	    }
@@ -158,6 +162,51 @@ public class Validation {
 		 
 	 }
 	 
-	 
 	 //signup additional ko laagi
+	 public static String validateNameField(String field, String value) {
+		 String pattern = "^[a-zA-Z\\s]+$";
+		 if (value.length() < 2 || !value.matches(pattern)) {
+	         return "Please enter a valid "+ field + " with more than 2 characters and only alphabet!";
+	     }
+	     return "";
+	 }
+	 
+	 public static String validateGender(String gender) {
+		List<String> genderList = Arrays.asList("male", "female", "others");
+		if(genderList.contains(gender.toLowerCase())) {
+			return "";
+		}else {
+			return "Invalid Gender!";		
+		}
+	 }
+	 
+	 public static String validateDob(String dateStr) {
+	     // Check if the string matches the expected format using regex
+	     if (!dateStr.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+	         return "Please enter a valid date in YYYY-MM-DD format!";
+	     }
+
+	     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	     sdf.setLenient(false); // Strict parsing (invalid dates like 2023-02-30 will be rejected)
+
+	     try {
+	         // Parse using SimpleDateFormat then convert to sql.Date
+	         java.util.Date parsedDate = sdf.parse(dateStr);
+	         Date inputDate = new Date(parsedDate.getTime());
+	         
+	         Date today = new Date(System.currentTimeMillis()); // Current date in sql.Date
+
+	         // Check if the date is in the future
+	         if (inputDate.after(today)) {
+	             return "The date cannot be in the future!";
+	         }
+
+	     } catch (ParseException e) {
+	         return "Please enter a valid date!";
+	     }
+
+	     return ""; // Return empty string if validation passes
+	 }
+
+     
 }

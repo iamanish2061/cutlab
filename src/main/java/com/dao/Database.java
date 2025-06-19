@@ -544,4 +544,24 @@ public class Database {
     }
     
     
+    public boolean insertAdditionalInfo(User user, int id) throws ClassNotFoundException, SQLException {
+		
+		String query = "update users set fname=?, lname=?, gender=?, dob=?, address=?, phoneNumber=? where user_id=?";
+		try(Connection conn = dbConnectionObject();
+		PreparedStatement preparedStatement = conn.prepareStatement(query)){
+			preparedStatement.setString(1, user.getFirstName());
+			preparedStatement.setString(2, user.getLastName());
+			preparedStatement.setString(3, user.getGender());
+			preparedStatement.setDate(4, java.sql.Date.valueOf(user.getDob()));
+			preparedStatement.setString(5, user.getAddress());
+			preparedStatement.setString(6, user.getPhoneNumber());
+			preparedStatement.setInt(7, id);
+			
+			int affectedRows=preparedStatement.executeUpdate();
+			return affectedRows>0;
+		}
+		
+		
+	}
+    
 }

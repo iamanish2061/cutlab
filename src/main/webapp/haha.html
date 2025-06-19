@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(60, 60, 120, 0.15);
+            padding: 32px 24px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #444;
+            font-weight: 500;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #bdbdbd;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f9f9f9;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #66a6ff;
+            outline: none;
+        }
+        .gender-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .gender-group label {
+            margin-bottom: 0;
+            font-weight: 400;
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 0.92em;
+            margin-top: 3px;
+            min-height: 18px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #66a6ff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #4e8edb;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 18px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Signup Form</h2>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required>
+                <div class="error" id="firstNameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required>
+                <div class="error" id="lastNameError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="2" required></textarea>
+                <div class="error" id="addressError"></div>
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <div class="gender-group">
+                    <label><input type="radio" name="gender" value="male" required> Male</label>
+                    <label><input type="radio" name="gender" value="female"> Female</label>
+                    <label><input type="radio" name="gender" value="other"> Other</label>
+                </div>
+                <div class="error" id="genderError"></div>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required pattern="^\d{10}$" maxlength="10">
+                <div class="error" id="phoneError"></div>
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required>
+                <div class="error" id="dobError"></div>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+    <script>
+        const form = document.getElementById('signupForm');
+        const fields = [
+            { id: 'firstName', validate: val => val.trim() !== '', error: 'First name is required.' },
+            { id: 'lastName', validate: val => val.trim() !== '', error: 'Last name is required.' },
+            { id: 'address', validate: val => val.trim() !== '', error: 'Address is required.' },
+            { id: 'phone', validate: val => /^\d{10}$/.test(val), error: 'Enter a valid 10-digit phone number.' },
+            { id: 'dob', validate: val => !!val, error: 'Date of birth is required.' }
+        ];
+
+        function validateGender() {
+            const genderInputs = document.getElementsByName('gender');
+            let checked = false;
+            for (let input of genderInputs) {
+                if (input.checked) checked = true;
+            }
+            document.getElementById('genderError').textContent = checked ? '' : 'Please select gender.';
+            return checked;
+        }
+
+        function validateField(field) {
+            const input = document.getElementById(field.id);
+            const errorDiv = document.getElementById(field.id + 'Error');
+            if (!field.validate(input.value)) {
+                errorDiv.textContent = field.error;
+                return false;
+            } else {
+                errorDiv.textContent = '';
+                return true;
+            }
+        }
+
+        fields.forEach(field => {
+            document.getElementById(field.id).addEventListener('input', () => validateField(field));
+        });
+        document.getElementsByName('gender').forEach(input => {
+            input.addEventListener('change', validateGender);
+        });
+
+        form.addEventListener('submit', function(e) {
+            let valid = true;
+            fields.forEach(field => {
+                if (!validateField(field)) valid = false;
+            });
+            if (!validateGender()) valid = false;
+            if (!valid) e.preventDefault();
+        });
+    </script>
+</body>
+</html>
