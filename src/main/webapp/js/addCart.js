@@ -37,30 +37,21 @@ document.addEventListener('DOMContentLoaded', function () {
             cartItem.dataset.id = item.product.id;
 
             cartItem.innerHTML = `
-
-                <img src="${item.product.url || 'placeholder.jpg'}" alt="${item.name}">
-                
+                <img src="${item.product.url || 'placeholder.jpg'}" alt="${item.name}">                
                 <p>${item.product.name}</p>
-
                 <div class="cart-item-price">NRs: ${item.product.price.toFixed(2)}</div>
-
                 <div class="cart-item-quantity">
                     <div class="quantity-controls">    
                         <button class="change-qty less-qty" data-change="-1" data-stock="${item.product.stock}">-</button>
                         <span class="quantity-display">${item.quantity}</span>
                         <button class="change-qty add-qty" data-change="1" data-stock="${item.product.stock}">+</button>
                     </div>
-
                     <div class="cart-buttons">
                         <button class="update-qty" style="display:none;">OK</button>
                         <span class="remove-item">Remove</span>
                     </div>
-
                 </div>
-
                 <div class="cart-item-total">${item.product.price * item.quantity}<div>
-                
-            
             `;
             cartItemsContainer.appendChild(cartItem);
         });
@@ -185,7 +176,7 @@ document.getElementById("checkoutBtn").addEventListener("click", function() {
             }).catch(error => {
                 showToast('Error: ' + error.message);
             });
-        }, 1000);
+        }, 500);
 
     }
 

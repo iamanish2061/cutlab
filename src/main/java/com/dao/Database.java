@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -13,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.esewa.EsewaAttributes;
 
 public class Database {
 	
@@ -81,16 +84,20 @@ public class Database {
             
             preparedStatement.setString(1, email);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            	            	
                 if (resultSet.next()) {
                 	
                 	String dbHashedPassword= resultSet.getString("password");
+                	
                 	String dbSalt = resultSet.getString("salt");
+                	
                 	// Convert salt back to byte array
                 	byte[] saltBytes = Base64.getDecoder().decode(dbSalt);
                 	
                 	// Hash the entered password using the stored salt
 	                String enteredHashedPassword = User.hashPassword(password, saltBytes);
-
+	                
+	                
 	                // Compare stored hash with the new hash
 	                return dbHashedPassword.equals(enteredHashedPassword);
                 	
@@ -100,31 +107,25 @@ public class Database {
 		return false;
     }
 	
-//	public String returnName(String email) {
-//		String fname="";
-//		String query = "SELECT fname as name FROM users WHERE email = ?";
-//
-//        try (Connection conn = dbConnectionObject();
-//             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-//            
-//            preparedStatement.setString(1, email);
-//            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-//                if (resultSet.next()) {
-//                	fname= resultSet.getString("name");	 
-//                	conn.close();
-//	                return fname;
-//                }
-//            }
-//        } catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		return fname;
-//	}
+	public String returnName(String email) {
+		String fname=null;
+		String query = "SELECT fname as name FROM users WHERE email = ?";
+
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            
+            preparedStatement.setString(1, email);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                	fname= resultSet.getString("name");	 
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		return fname;
+	}
 
 	public int returnId(String email) {
 		int id = -1;
@@ -560,8 +561,411 @@ public class Database {
 			int affectedRows=preparedStatement.executeUpdate();
 			return affectedRows>0;
 		}
-		
-		
+				
 	}
+    
+    //checkout page maa order and shippingdetails maa insert garna
+    
+    public boolean insertIntoOrders(int userId, String transactionUuid, EsewaAttributes esewa) throws ClassNotFoundException, SQLException {
+    	float total = (esewa.getAmount()) +  esewa.getTaxAmt() + esewa.getProductDeliveryCharge() + esewa.getProductServiceCharge();
+    	String query = "INSERT INTO orders(order_id, user_id, total_amount) Values(?,?,?)";
+    	try(Connection conn = dbConnectionObject();
+			PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, transactionUuid);
+			ps.setInt(2, userId);
+			ps.setFloat(3, total);
+    		int affectedRow = ps.executeUpdate();	
+    		return affectedRow>0;
+    	}
+    }
+    
+    public boolean insertIntoShippingDetails(ShippingDetails sd, String transaction_uuid) throws ClassNotFoundException, SQLException {
+    	String query = "INSERT INTO shipping_details(order_id, full_name, email, phone_number, address, city, state_province, zip_code) Values(?,?,?,?,?,?,?,?)";
+    	try(Connection conn = dbConnectionObject();
+			PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, transaction_uuid);
+			ps.setString(2, sd.getFullname());
+			ps.setString(3, sd.getEmail());
+			ps.setString(4, sd.getPhone());
+			ps.setString(5, sd.getAddress());
+			ps.setString(6, sd.getCity());
+			ps.setString(7, sd.getState());
+			ps.setString(8, sd.getZip());
+			
+    		int affectedRow = ps.executeUpdate();	
+    		return affectedRow>0;
+    	}
+    }
+    
+    
+    
+    //success or fail huda order ko status change garney, cart ko order-items maa copy garney and payment maa halney
+    public boolean changeOrderStatus(String transactionUuid, String status) throws ClassNotFoundException, SQLException {
+    	String query = "UPDATE orders set status=? where order_id=?";
+		try(Connection conn = dbConnectionObject();
+			PreparedStatement ps = conn.prepareStatement(query)){
+				ps.setString(1, status);
+				ps.setString(2, transactionUuid);
+				
+	    	int affectedRow = ps.executeUpdate();
+	    	return affectedRow>0;
+		}
+   }
+    
+    public boolean cutToOrderItems(String orderId) throws ClassNotFoundException, SQLException {
+        Connection conn = null;
+    	ResultSet rs = null;
+        boolean success = false;
+        
+        try {
+            conn = dbConnectionObject();
+            conn.setAutoCommit(false); // Start transaction
+            
+            int userId = 0;
+            String getUserSql = "SELECT user_id FROM orders WHERE order_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(getUserSql);
+            pstmt.setString(1, orderId);
+            rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                userId = rs.getInt("user_id");
+            } else {
+                throw new SQLException("Order not found with ID: " + orderId);
+            }
+            
+            // Get all cart items for this user and insert into order_items
+            String moveItemsSql = "INSERT INTO order_items (order_id, product_id, quantity, unit_price) " +
+                                 "SELECT ?, c.product_id, c.quantity, p.price " +
+                                 "FROM cart c " +
+                                 "JOIN products p ON c.product_id = p.product_id " +
+                                 "WHERE c.user_id = ?";
+            
+            pstmt = conn.prepareStatement(moveItemsSql);
+            pstmt.setString(1, orderId);
+            pstmt.setInt(2, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                // Delete items from cart
+                String clearCartSql = "DELETE FROM cart WHERE user_id = ?";
+                pstmt = conn.prepareStatement(clearCartSql);
+                pstmt.setInt(1, userId);
+                pstmt.executeUpdate();
+                
+                conn.commit(); 
+                success = true;
+            } else {
+                conn.rollback(); // Rollback if no items were moved
+            }
+            
+        } catch (SQLException e) {
+            if (conn != null) {
+                conn.rollback(); // Rollback on error
+            }
+            throw e;
+        } finally {
+            // Clean up resources
+            if (rs != null) rs.close();
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
+        }
+        
+        return success;
+    }
+    
+    public boolean insertIntoPayment(EsewaAttributes esewa, String payMethod) throws ClassNotFoundException, SQLException {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        boolean success = false;
+        
+        try {
+            conn = dbConnectionObject();
+            
+            String sql = "INSERT INTO payments (order_id, method, amount, status, transcation_code, ref_id) " +
+                         "VALUES (?, ?, ?, ?, ?, ?)";
+
+            pstmt = conn.prepareStatement(sql);
+            
+            pstmt.setString(1, esewa.getTransaction_uuid());          
+            pstmt.setString(2, payMethod);                   
+            pstmt.setFloat(3, Float.parseFloat(esewa.getTotal_amount()));
+            pstmt.setString(4, esewa.getStatus());   
+            if (esewa.getTransaction_code() != null) {
+                pstmt.setString(5, esewa.getTransaction_code());       
+            } else {
+                pstmt.setNull(5, Types.VARCHAR);
+            }
+            if (esewa.getRef_id() != null) {
+                pstmt.setString(6, esewa.getRef_id());       
+            } else {
+                pstmt.setNull(6, Types.VARCHAR);
+            }
+            
+            int rowsAffected = pstmt.executeUpdate();
+            
+            success = (rowsAffected > 0);
+            
+        } finally {
+            if (pstmt != null) {
+                pstmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+        
+        return success;
+    }
+    	
+     
+    //change password ko db
+    public String getEmail(int userId) throws ClassNotFoundException, SQLException {
+    	String query = "SELECT email FROM users WHERE user_id = ?";
+    	String result = null;
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                	result= resultSet.getString("email");
+	                return result;
+                }
+            }
+        }
+        return result;
+    }
+    
+    //change picture
+    public boolean changePicturePath(int userId, String filename) throws ClassNotFoundException, SQLException {
+    	String query = "UPDATE users set pic=? where user_id=?";
+		try(Connection conn = dbConnectionObject();
+			PreparedStatement ps = conn.prepareStatement(query)){
+				ps.setString(1, filename);
+				ps.setInt(2, userId);
+				
+	    	int affectedRow = ps.executeUpdate();
+	    	return affectedRow>0;
+		}
+    }
+    
+    //profile fetch
+    public Object getUserProfileDetails(int userId) throws ClassNotFoundException, SQLException {
+        HashMap<String, Object> userDetails = new HashMap<>();
+        String sql = "SELECT u.fname, u.lname, u.dob, u.email, u.phoneNumber, " +
+                "u.address, u.pic FROM users u WHERE u.user_id = ?";
+        try (Connection conn = dbConnectionObject();            
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, userId);
+            
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                userDetails.put("firstName", rs.getString("fname"));                
+                userDetails.put("lastName", rs.getString("lname"));
+                userDetails.put("dob", rs.getDate("dob"));
+                userDetails.put("email", rs.getString("email"));
+                userDetails.put("phone", rs.getString("phoneNumber"));
+                userDetails.put("address", rs.getString("address"));
+                userDetails.put("profilePic", rs.getString("pic"));
+
+                return userDetails;
+            } 
+        }
+        return null;
+    }
+    
+    public String getProfileUrl(int userId) {
+    	String url="nouser.jpg";
+		
+    	String sql = "SELECT pic FROM users WHERE user_id = ?";
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                	url= resultSet.getString("pic");	 
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		} 
+    	return url;
+    }
+    
+    
+    //total no of cart item, order
+    public int getTotalCartItems(int userId) {
+    	int totalItems = 0;
+    	String sql = "SELECT COUNT(*) as total FROM cart WHERE user_id = ?";
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                	totalItems= resultSet.getInt("total");	 
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		} 
+    	return totalItems;
+    }
+    
+    public int getTotalOrders(int userId) {
+    	int totalItems = 0;
+    	String sql = "SELECT COUNT(*) as total FROM orders WHERE user_id = ?";
+        try (Connection conn = dbConnectionObject();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                	totalItems= resultSet.getInt("total");	 
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		} 
+    	return totalItems;
+    }
+    
+    public Object getOrders(int userId) throws SQLException, ClassNotFoundException {
+    	
+    	List <HashMap<String, Object>> orders = new ArrayList<>();
+    	    	
+        String sql = "SELECT order_id, total_amount, status, created_at from orders WHERE user_id = ?";
+        try (Connection conn = dbConnectionObject();            
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, userId);
+            
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+            	HashMap<String, Object> detail = new HashMap<>();
+            	detail.put("order_id", rs.getString("order_id"));                
+            	detail.put("totalAmount", rs.getDouble("total_amount"));
+            	detail.put("status", rs.getString("status"));
+            	detail.put("date", rs.getDate("created_at"));
+
+                orders.add(detail);
+            } 
+        }
+        return orders;
+    }
+    
+    public Object getDetailsOfOrder(String orderId) throws ClassNotFoundException, SQLException {
+    	HashMap<String, Object> orderDetails = new HashMap<>();
+    	
+    	String query = "Select p.image_url, p.name, o.quantity, o.unit_price from order_items o "
+    			+ "left join products p on o.product_id=p.product_id "
+    			+ "where o.order_id=?";
+    	
+    	String sql = "Select s.address, s.city, s.state_province, o.created_at, o.status as order_status, "
+    			+ "o.total_amount, p.status as payment_status, p.method from orders o "
+    			+ "left join shipping_details s on o.order_id=s.order_id "
+    			+ "left join payments p on o.order_id=p.order_id "
+    			+ "where o.order_id=?";
+    	
+    	List <Products> products = new ArrayList<>();
+    	
+    	try (Connection conn = dbConnectionObject();            
+                PreparedStatement pstmt = conn.prepareStatement(query)){
+                pstmt.setString(1, orderId);
+                
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                	Products p = new Products();
+                	p.setUrl(rs.getString("image_url"));
+                	p.setName(rs.getString("name"));
+                	p.setStock(rs.getInt("quantity"));
+                	p.setPrice(rs.getDouble("unit_price"));
+                	products.add(p);
+                } 
+            }
+    	orderDetails.put("productsInfo", products);
+    	
+    	try (Connection conn = dbConnectionObject();            
+                PreparedStatement ps = conn.prepareStatement(sql)){
+                ps.setString(1, orderId);
+                
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                	orderDetails.put("orderId", orderId);
+                	orderDetails.put("date", rs.getDate("created_at"));
+                	orderDetails.put("orderStatus", rs.getString("order_status"));
+                	orderDetails.put("paymentMethod", rs.getString("method"));
+                	orderDetails.put("paymentStatus", rs.getString("payment_status"));
+                	orderDetails.put("address", rs.getString("address")+" "+rs.getString("city")+" "+rs.getString("state_province"));
+                	orderDetails.put("totalAmount", rs.getString("total_amount"));
+                } 
+            }
+    	
+    	
+    	
+    	return orderDetails;
+    }
+    
+    //cancelling orders
+    public boolean processOrderCancellation(String orderId) throws SQLException, ClassNotFoundException {
+        try (Connection conn = dbConnectionObject()) {
+            conn.setAutoCommit(false);
+            try {
+                boolean itemsRemoved = removeOrdersFromOrderItems(orderId);
+                boolean orderUpdated = updateOrderStatus(orderId, "CANCELLED");
+                boolean paymentUpdated = updatePaymentStatus(orderId, "Left to be Refunded");
+                
+                if (itemsRemoved && orderUpdated && paymentUpdated) {
+                    conn.commit();
+                    return true;
+                }
+                conn.rollback();
+                return false;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        }
+    }
+    
+    public boolean removeOrdersFromOrderItems(String orderId) throws ClassNotFoundException, SQLException{
+    	String query = "DELETE FROM order_items where order_id=?";
+		try(Connection conn = dbConnectionObject();
+			PreparedStatement ps = conn.prepareStatement(query)){
+				ps.setString(1, orderId);
+				
+	    	int affectedRow = ps.executeUpdate();
+	    	return affectedRow>0;
+		}
+    }
+    
+	public boolean updateOrderStatus(String orderId, String status) throws ClassNotFoundException, SQLException{
+		String query = "UPDATE orders set status=? where order_id=?";
+		try(Connection conn = dbConnectionObject();
+			PreparedStatement ps = conn.prepareStatement(query)){
+				ps.setString(1, status);
+				ps.setString(2, orderId);
+				
+	    	int affectedRow = ps.executeUpdate();
+	    	return affectedRow>0;
+		}
+    }
+	
+	public boolean updatePaymentStatus(String orderId, String status) throws ClassNotFoundException, SQLException{
+		String query = "UPDATE payments set status=? where order_id=?";
+		try(Connection conn = dbConnectionObject();
+			PreparedStatement ps = conn.prepareStatement(query)){
+				ps.setString(1, status);
+				ps.setString(2, orderId);
+				
+	    	int affectedRow = ps.executeUpdate();
+	    	return affectedRow>0;
+		}
+	}
+    
+    
+    
     
 }

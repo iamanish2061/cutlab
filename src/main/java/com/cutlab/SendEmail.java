@@ -107,12 +107,10 @@ public class SendEmail extends HttpServlet {
             // 1. Setup SMTP properties
             Properties props = new Properties();
             props.put("mail.smtp.auth", "true");
-//            props.put("mail.smtp.starttls.required", "true");
             props.put("mail.smtp.starttls.enable", "true"); // TLS encryption
             props.put("mail.smtp.host", SMTP_HOST);
             props.put("mail.smtp.port", SMTP_PORT);
             props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-//			props.put("mail.smtp.ssl.protocols", "TLSv1.2"); // Security protocol
 			
         // 2. Create authenticator
             Authenticator auth = new jakarta.mail.Authenticator() {

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/profile.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" 
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <!-- code of navbar -->
+    </nav>
+
+    <div class="container">    
+        <!-- Profile Section -->
+        <section class="profile-section">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-pic-container">
+                    <img src="images/user_profile/nouser.jpg" alt="Profile Picture" class="profile-pic" id="profilePic">
+                    <input type="file" id="profileUpload" accept="image/*" style="display: none;">
+                </div>
+                <h2 class="profile-name" id="profileName">User</h2>
+                <p class="profile-email" id="profileEmail">user@gmail.com</p>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="orderCount">-</div>
+                        <div class="stat-label">Orders</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-value" style="position: relative; display: inline-block; cursor: pointer;" onclick="window.location = 'AddCart.html'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M7 18c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm10 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-12.83-2l1.1-2h11.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49a1 1 0 0 0-.88-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.16 17.37 4.48 18 5.09 18H19v-2H6.42c-.14 0-.25-.11-.25-.25l.03-.12z"/>
+                            </svg>
+                            <span id="cartCount" class="cartCount">-</span>
+                        </div>
+                        <div class="stat-label">Cart</div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="btn btn-primary" id="changePicBtn">
+                        <i class="fas fa-camera"></i> Change Photo
+                    </button>
+                    <button class="btn btn-outline" id="editProfileBtn">
+                        <i class="fas fa-edit"></i> Edit Profile Details
+                    </button>
+                    <button class="btn btn-outline" id="changePassBtn">
+                        <i class="fas fa-lock"></i> Change Password
+                    </button>
+                    <button class="btn btn-danger" onclick="showLogoutModal()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Profile Details -->
+            <div class="profile-details">
+                <h2 class="section-title"><i class="fas fa-user-circle"></i> Personal Information</h2>
+                
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" value="-" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" value="-" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" value="-" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" value="-" disabled>
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label for="birthdate">Date of Birth</label>
+                        <input type="text" id="birthdate" value="-" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" value="-" disabled>
+                    </div>
+                
+                </form>
+            </div>
+        </section>
+        
+        <!-- Orders Section -->
+        <section class="orders-section">
+            <h2 class="section-title"><i class="fas fa-shopping-bag"></i> My Orders</h2>
+            
+            <div class="orders-tabs">
+                <button class="tab-btn active" data-tab="current">Current Orders</button>
+                <button class="tab-btn" data-tab="past">Order History</button>
+                <button class="tab-btn" data-tab="cancelled">Cancelled</button>
+            </div>
+            
+            <div class="orders-grid" id="currentOrders">
+                <!-- Current Orders will be loaded here dynamically-->
+                
+            </div>
+            
+            <div class="orders-grid" id="pastOrders" style="display: none;">
+                <!-- Past Orders will be loaded here dynamically-->
+                
+            </div>
+            
+            <div class="orders-grid" id="cancelledOrders" style="display: none;">
+                <!-- Cancelled Orders will be loaded here dynamically-->
+                
+            </div>
+        </section>
+    </div>
+    
+    <!-- Order Details Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <h2 class="modal-title">Order Details</h2>
+            
+            <div class="order-details">
+                <div class="detail-row">
+                    <span class="detail-label">Order ID:</span>
+                    <span class="detail-value" id="modalOrderId">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Order Date:</span>
+                    <span class="detail-value" id="modalOrderDate">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Order Status:</span>
+                    <span class="detail-value" id="modalOrderStatus">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Payment Method:</span>
+                    <span class="detail-value" id="modalPaymentMethod">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Payment Status:</span>
+                    <span class="detail-value" id="modalPaymentStatus">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Delivery Address:</span>
+                    <span class="detail-value" id="modalDeliveryAddress">-</span>
+                </div>
+            </div>
+            
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="modalProducts">
+                    <!-- Products will be added here -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right; font-weight: 500;">Subtotal:</td>
+                        <td id="modalSubtotal">-</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: right; font-weight: 500;">Shipping:</td>
+                        <td id="modalShipping">-</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: right; font-weight: 600;">Total:</td>
+                        <td id="modalTotal" style="font-weight: 600;">-</td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div class="modal-actions" id="modalActions">
+                <button class="btn btn-danger" id="cancelOrderBtn">Cancel Order</button>
+                <button class="btn btn-outline" id="contactSupportBtn">Contact Support</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <button class="modal-close" id="passwordModalClose">&times;</button>
+            <h2 class="modal-title"><i class="fas fa-lock"></i> Change Password</h2>
+            
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" required>
+                    <span class="toggle-password" onclick="togglePassword('currentPassword', 'showCurrentPassword', 'hideCurrentPassword')" style="position:absolute; right:15px; top:45px; cursor:pointer;">
+                        <i class="fas fa-eye" id="showCurrentPassword" style="display:none;" ></i>
+                        <i class="fas fa-eye-slash" id="hideCurrentPassword"></i>
+                    </span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" required>
+                    <span class="toggle-password" onclick="togglePassword('newPassword', 'showNewPassword', 'hideNewPassword')" style="position:absolute; right:15px; top:45px; cursor:pointer;">
+                        <i class="fas fa-eye" id="showNewPassword" style="display:none;" ></i>
+                        <i class="fas fa-eye-slash" id="hideNewPassword"></i>
+                    </span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" required>
+                    <span class="toggle-password" onclick="togglePassword('confirmPassword', 'showConfirmPassword', 'hideConfirmPassword')" style="position:absolute; right:15px; top:45px; cursor:pointer;">
+                        <i class="fas fa-eye" id="showConfirmPassword" style="display:none;" ></i>
+                        <i class="fas fa-eye-slash" id="hideConfirmPassword"></i>
+                    </span>
+                </div>
+
+                <div class="error-msg" id="error-msg"></div>
+                
+                <div class="form-group form-action-btns">
+                    <button type="submit" class="btn btn-primary" id="pass-update-btn">Update Password</button>
+                    <button type="button" class="btn btn-danger" id="cancelPasswordBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <div id="toast" class="toast"></div>
+    <script src="js/CommonFunction.js"></script>
+    <script src="js/profile.js"></script>
+    <script>
+        $("#navbar").load("includes/navbar.html", function() {
+        $.getScript("js/navbar.js");
+        });
+
+        $(document).ready(function() {
+            $('#newPassword').on('input', function() {
+                displayPasswordError('#newPassword', '#error-msg', '#confirmPassword');
+            });
+
+            $('#confirmPassword').on('input', function() {
+                displayConfirmPasswordError('#newPassword', '#confirmPassword', '#error-msg');
+            });
+
+        });
+    </script>
+</body>
+</html>

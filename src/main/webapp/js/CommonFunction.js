@@ -1,15 +1,3 @@
-//login ra signup ko password show hide
-function passwordToggleShowHide(element, action){
-    var passwordField = document.getElementById(element);
-    if(action == 'in'){
-        passwordField.type = 'text';
-    }else if(action == 'out'){
-        passwordField.type = 'password';
-    }else{
-
-    }
-}
-
 //validation of signup
 function validateEmail(email){
     const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -158,6 +146,38 @@ function updateCartButton(productId) {
             sessionStorage.setItem(`cartButtonState_${productId}`, buttonText);
         })
         .catch(error => console.error('Error checking cart:', error));
+}
+
+function validateQueryOrCategory(query){
+    // Validate query for allowed characters and length
+    if (!/^[\w\s\-'.]{1,50}$/.test(query)) {
+        showToast('Invalid search query. Please use only letters, numbers, spaces, and - \' . characters (max 50).');
+        return false;
+    }
+    // Prevent HTML special characters in query
+    if (/[<>&"]/g.test(query)) {
+        showToast('Invalid search query. HTML special characters are not allowed.');
+        return false;
+    }
+    return true;
+}
+
+//password toggle
+function togglePassword(field, show, hide){
+    const pwField = document.getElementById(field);
+    const showIcon = document.getElementById(show);
+    const hideIcon = document.getElementById(hide);
+
+    if (pwField.type === 'password') {
+        pwField.type = 'text';
+        showIcon.style.display = '';
+        hideIcon.style.display = 'none';
+    } else {
+        pwField.type = 'password';
+        showIcon.style.display = 'none';
+        hideIcon.style.display = '';
+    }
+
 }
 
 

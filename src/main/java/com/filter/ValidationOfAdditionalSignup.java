@@ -5,7 +5,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dao.Utility;
 import com.dao.Validation;
 
 import jakarta.servlet.Filter;
@@ -33,12 +32,12 @@ public class ValidationOfAdditionalSignup implements Filter {
 	        if (path.endsWith("/AdditionalSignupProcess") && "POST".equalsIgnoreCase(method)) {    
 	        	
 	        	HttpSession session = request.getSession(false);
-	            if (session == null || !session.getAttribute("loginStatus").equals(true)) {
+	            if (session == null || session.getAttribute("user_id")==null) {
 	            	response.sendRedirect("login.html");
 	                return;
 	            }
 	        	
-	            final String[] fieldNames = {"firstName", "lastName", "gender", "dob", "address", "phone"};
+	            final String[] fieldNames = {"firstName", "lastName", "gender", "dob", "address", "phone", "source"};
 	            
 	            Map<String, String> formData = new HashMap<>();
 	            for (String field : fieldNames) {
@@ -86,6 +85,8 @@ public class ValidationOfAdditionalSignup implements Filter {
 	                return Validation.validateAddress(value);
 	            case "phone":
 	                return Validation.validatePhone(value);
+	            case "source":
+	            	return Validation.validateSource(value);
 	            default:
 	                return "";
 	        }

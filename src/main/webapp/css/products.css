@@ -297,8 +297,111 @@ body {
 .toast.show {
     visibility: visible;
     opacity: 1;
+} 
+
+
+/* formfill popup */
+
+.formfill-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Darker overlay for focus */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  opacity: 0;
+  transition: opacity 0.3s ease; /* Smooth fade-in */
 }
 
+.formfill-modal.active {
+  opacity: 1; /* Fade-in effect when displayed */
+}
+
+.formfill-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transform: translateY(-20px);
+  transition: transform 0.3s ease; /* Subtle "pop-up" animation */
+}
+
+.formfill-modal.active .formfill-modal-content {
+  transform: translateY(0); /* Final position */
+}
+
+.formfill-modal-content p {
+  margin: 0 0 15px;
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.formfill-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.formfill-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.formfill-btn.confirm {
+  background: var(--primary-color);
+  color: white;
+}
+
+.formfill-btn.confirm:hover {
+  background: #e53935; /* Slightly darker on hover */
+  transform: translateY(-1px); /* Lift effect */
+}
+
+.formfill-btn.cancel {
+  background: #f1f1f1;
+  color: #555;
+}
+
+.formfill-btn.cancel:hover {
+  background: #e0e0e0;
+  transform: translateY(-1px);
+}
+
+
+/* Toast Notification */
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+}
 
 
 /* Responsive Adjustments */

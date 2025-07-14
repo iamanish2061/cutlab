@@ -207,6 +207,26 @@ public class Validation {
 
 	     return ""; // Return empty string if validation passes
 	 }
+	 
+	 public static String validateSource(String source) {
+		 List<String> sourceList = Arrays.asList("products.html", "checkout.html", "profile.html");
+			if(sourceList.contains(source.toLowerCase())) {
+				return "";
+			}else {
+				return "Invalid Source!";		
+			}
+	 }
+	 
+	 //order id validation 
+	 public static boolean isOrderIdValid(String orderId) {
+		 if(!orderId.isEmpty()) {
+			String pattern = "^[a-zA-Z0-9_-]+$";
+		    if (orderId.matches(pattern)) {
+		        return true;
+		    }
+		 }
+		 return false;
+	 }
 
      
 }

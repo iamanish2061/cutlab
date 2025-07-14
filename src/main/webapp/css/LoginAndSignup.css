@@ -232,6 +232,7 @@ a {
 }
 
 .input-group {
+  position: relative;
   margin-bottom: 10px;
   width: 100%;
   display: flex;
@@ -444,4 +445,27 @@ a {
   .form-container.right-panel-active .signup-section {
       transform: translateY(0);
   }
+}
+
+/* Toast Notification */
+.toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 16px;
+    position: fixed;
+    z-index: 2000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.toast.show {
+    visibility: visible;
+    opacity: 1;
 }

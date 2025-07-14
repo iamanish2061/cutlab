@@ -10,8 +10,6 @@ import java.nio.charset.StandardCharsets;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -19,8 +17,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
+@SuppressWarnings("deprecation")
 @WebServlet("/responseHandle")
 public class EsewaResponseServlet extends HttpServlet {
 
@@ -46,18 +44,16 @@ public class EsewaResponseServlet extends HttpServlet {
 
     private void processEsewaResponse(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        int userId = (int) session.getAttribute("user_id");
 
         String encodedData = request.getParameter("data");
         if (encodedData == null || encodedData.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing 'data' parameter.");
+            request.getRequestDispatcher("/payment-failure").forward(request, response);
             return;
         }
 
         try {
             // Decode Base64 data
-            String decodedData = new String(Base64.decodeBase64(encodedData), StandardCharsets.UTF_8);
+			String decodedData = new String(Base64.decodeBase64(encodedData), StandardCharsets.UTF_8);
 
             // Parse JSON
             EsewaAttributes paymentResponse = gson.fromJson(decodedData, EsewaAttributes.class);
@@ -66,24 +62,21 @@ public class EsewaResponseServlet extends HttpServlet {
             String amt = paymentResponse.getTotal_amount().replace(",", "");
             paymentResponse.setTotal_amount(amt);
 
+            
             // Verify signature
             boolean isValid = EsewaSignatureUtil.verifySignature(paymentResponse);
 
-            // Set attributes for JSP
-            request.setAttribute("userId", userId);
             request.setAttribute("paymentDetails", paymentResponse);
 
             if (isValid && "COMPLETE".equalsIgnoreCase(paymentResponse.getStatus())) {
-            	System.out.println("done");
                 request.getRequestDispatcher("/payment-success").forward(request, response);
-            } else {
+            } 
+            else {
                 // Verify via GET call to eSewa server
-            	System.out.println("err1");
-                boolean verificationSuccess = sendGetRequestForVerification(paymentResponse);
+                boolean verificationSuccess = sendGetRequestForVerification(paymentResponse, request);
                 if (verificationSuccess) {
                     request.getRequestDispatcher("/payment-success").forward(request, response);
                 } else {
-                	System.out.println("err2");
                     request.getRequestDispatcher("/payment-failure").forward(request, response);
                 }
             }
@@ -94,7 +87,7 @@ public class EsewaResponseServlet extends HttpServlet {
         }
     }
 
-    public static boolean sendGetRequestForVerification(EsewaAttributes response) {
+    public boolean sendGetRequestForVerification(EsewaAttributes response, HttpServletRequest request) {
         try {
             String total_amount = response.getTotal_amount();
             String transaction_uuid = response.getTransaction_uuid();
@@ -119,12 +112,19 @@ public class EsewaResponseServlet extends HttpServlet {
             }
             in.close();
 
-            JsonObject jsonObject = JsonParser.parseString(res.toString()).getAsJsonObject();
-            String status = jsonObject.get("status").getAsString();
-
-            System.out.println("Status from eSewa: " + status);
-
-            return "COMPLETE".equalsIgnoreCase(status);
+            EsewaAttributes paymentResponseF = gson.fromJson(res.toString(), EsewaAttributes.class);
+            String amt = paymentResponseF.getTotal_amount().replace(",", "");
+            paymentResponseF.setTotal_amount(amt);
+            
+            System.out.println("Status from eSewa: " + paymentResponseF.getStatus());
+            System.out.println("ref from eSewa: " + paymentResponseF.getRef_id());
+            
+            if(paymentResponseF.getStatus().equalsIgnoreCase("COMPLETE")) {
+            	return true;
+            }else {
+            	request.setAttribute("paymentDetailsF", paymentResponseF);
+            	return false;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

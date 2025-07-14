@@ -17,22 +17,24 @@
     <!-- code of navbar -->
   </nav>
 
+  <!-- Animated Background -->
+    
+
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-container">
       <h1 class="hero-title">Unisex Saloon</h1>
       <p class="hero-subtitle">Style yourself with experienced personel</p>
-      <button class="hero-button">Get Started</button>
+      <button class="hero-button" onclick="changeLocation()">Get Started</button>
     </div>
-    
-    
-   
-    <!-- Animated Background -->
     <div class="hero-background">
       <div class="shape shape-1"></div>
       <div class="shape shape-2"></div>
       <div class="shape shape-3"></div>
     </div>
+    
+   
+    
   </section>
 
   <!-- Features Section -->
@@ -99,7 +101,13 @@
 
   <script src="js/script.js"></script>
   <script>
-    $("#navbar").load("includes/navbar.html");
+  function changeLocation() {
+      window.location.href = "login.html";
+    }
+
+    $("#navbar").load("includes/navbar.html", function() {
+      $.getScript("js/navbar.js");
+    });
   </script>
 </body>
 </html>

@@ -127,7 +127,7 @@ public class ValidationOfCheckOut implements Filter {
                 String value = formData.get(field);
                 error = validateField(field, value.trim());
                 if (!error.isEmpty()) break; // fail-fast on first error
-                System.out.println("valid");
+//                System.out.println("valid");
             }
 
             if (!error.isEmpty()) {

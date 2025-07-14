@@ -59,8 +59,3 @@ public class BeforeCheckout extends HttpServlet{
 
 }
 
-
-//check and validate total amount first
-//fill signup form if not
-//give shipping details
-// return the data for esewa form

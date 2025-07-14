@@ -22,7 +22,7 @@ body {
 
 /* Navbar Container */
 .navbar {
-  order: 1;;
+  order: 1;
   background-color: #1f2937; /* bg-gray-800 */
   position: fixed;
   width: 100%;
@@ -33,13 +33,29 @@ body {
 
 /* Container for Navbar Content */
 .nav-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
+/* profile */
+/* Profile container in the navbar */
+.profile-holder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;             /* Adjust size as needed */
+  height: 2.5rem;
+  border-radius: 50%;        /* Makes it a perfect circle */
+  border: 1px solid #d1d5db; /* Light gray border */
+  overflow: hidden;          /* Clips the image inside the circle */
+  background-color: #f9fafb; /* Optional: fallback background */
+}
+
+
 
 /* Logo */
 .logo {
@@ -85,6 +101,10 @@ body {
 .nav-link:hover {
   color: #3b82f6; /* hover:text-blue-500 */
 }
+
+
+
+
 
 /* Mobile Menu Styles */
 @media (max-width: 768px) {

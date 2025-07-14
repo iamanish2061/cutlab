@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('categorySelect');
     
     let allProducts = [];
-    let categories = [];
     
     // Fetch all products on page load
     fetchProducts();
@@ -19,6 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Category filter
     categorySelect.addEventListener('change', function() {
         const category = this.value;
+
+        if(validateQueryOrCategory(category) === false) {
+            return;
+        }
+
         if (category === '') {
             renderProducts(allProducts);
         } else {
@@ -66,6 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function handleSearch() {
         const query = searchInput.value.trim();
+        
+        if(validateQueryOrCategory(query) === false) {
+            return;
+        }
+
         if (query === '') {
             renderProducts(allProducts);
             return;
@@ -119,4 +128,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-//baki validations of query action and product id before sending to servlet
+

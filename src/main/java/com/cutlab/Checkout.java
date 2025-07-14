@@ -1,10 +1,12 @@
 package com.cutlab;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.dao.Database;
+import com.dao.ShippingDetails;
 import com.dao.Utility;
 import com.esewa.EsewaAttributes;
 import com.esewa.EsewaSignatureUtil;
@@ -61,11 +63,10 @@ public class Checkout extends HttpServlet{
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		HttpSession session = request.getSession(false);
 		int userId = Integer.parseInt(session.getAttribute("user_id").toString());
-		
-		EsewaAttributes esewa = new EsewaAttributes();
-		
+				
 		float subTotal = db.getTotalAmountOfCart(userId);
 		
 		if(subTotal <= 0.0) {
@@ -80,59 +81,60 @@ public class Checkout extends HttpServlet{
 	        String phone = request.getParameter("phone");
 	        String email = request.getParameter("email");
 	        String payMethod = request.getParameter("pay_method");
-			
-			//create object and do db
-			
 	        
+	        ShippingDetails sd = new ShippingDetails(fullname, address, city, state, zip, phone, email);
+
 	        RequestDispatcher dispatcher;
 	        if(payMethod.equalsIgnoreCase("esewa")) {
+	        	EsewaAttributes esewa = new EsewaAttributes();
 	        	esewa.setAmount(subTotal);
+				esewa.setTaxAmt(0);
+				esewa.setProductServiceCharge(0);
+				esewa.setProductDeliveryCharge(100);
 				
-				float tax = 0;
-				esewa.setTaxAmt(tax);
-				
-				String total = Float.toString(subTotal+tax);
+				String total = Float.toString(subTotal+esewa.getProductDeliveryCharge());
 				esewa.setTotal_amount(total);
 				
 				String transactionUuid = EsewaSignatureUtil.generateTransactionUuid("1", "1", total);
 				esewa.setTransaction_uuid(transactionUuid);
 				
-				esewa.setProductServiceCharge(0);
-				
-				esewa.setProductDeliveryCharge(0);
-				
 				String data = EsewaSignatureUtil.prepareData(total, transactionUuid, EsewaAttributes.MERCHANT_ID);
 				String signature = EsewaSignatureUtil.getSignature(data);
 				esewa.setSignature(signature);
 				
-				request.setAttribute("EsewaInfo", esewa);
-				dispatcher = request.getRequestDispatcher("/sendFormToEsewa");
-				dispatcher.forward(request, response);
+				//inserting into orders and shipping table
+				try {
+					if(db.insertIntoOrders(userId, transactionUuid, esewa)) {
+						if(db.insertIntoShippingDetails(sd, transactionUuid)) {
+							request.setAttribute("EsewaInfo", esewa);
+							dispatcher = request.getRequestDispatcher("/sendFormToEsewa");
+							dispatcher.forward(request, response);
+						}else {
+							response.sendRedirect("/checkout.html?error=Failed to store shipping details, Please try again later!");
+						}
+					}else {
+						response.sendRedirect("/checkout.html?error=Failed to store order, Please try again later!");
+					}
+				} catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+								
 	        }else if(payMethod.equalsIgnoreCase("khalti")) {
 	        	
-	        	
+	        	//same as esewa 
 	        	
 	        	dispatcher = request.getRequestDispatcher("/sendFormToKhalti");
 				dispatcher.forward(request, response);
+	        }else if(payMethod.equalsIgnoreCase("cod")){
+	        	//logic left to draw
 	        }else {
 	        	response.sendRedirect("/checkout.html?error=Please select payment method!");
-	        }
-		    
-		}
-		
-		
-	}
-
-	
+	        }   
+		}	
+	}	
 }
 
+//shipping and order halna baki khalti ko
+//cod ko logic baki
 
-
-
-// success vayesi 
-// order ra order_item ra payment table maa halney details esewa ko maa validate garesi
-// ani cart bata delete garney
-
-// fail vayo vane
-// shipping hatauney
-// kei nagarney

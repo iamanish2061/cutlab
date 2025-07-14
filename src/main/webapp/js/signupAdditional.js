@@ -1,10 +1,24 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Function to get URL parameters to redirect user to the correct page from where they begin
+
+      const queryString = window.location.search;
+      const parameter = new URLSearchParams(queryString);
+      const sourceValue = parameter.get('source');
+      const modal = document.getElementById('sourceHolder');
+
+      if(sourceValue && modal) {
+          modal.value = sourceValue;
+      }else{
+        modal.value = "checkout.html";
+      }
+
+
 
     function getParams() {
       const params = {};
       const queryString = window.location.search;
       if (!queryString){
-          return params;
+        return params;
       }
       const pairs = new URLSearchParams(queryString);
       for (const [key, value] of pairs.entries()) {
@@ -96,7 +110,7 @@ function displayError(errorDescription, errorId) {
   const form = document.getElementById('signup-form');
   const submitButton = document.getElementById('submitForm');
 
-  submitButton.addEventListener('submit', function(e) {
+  form.addEventListener('submit', function(e) {
       e.preventDefault(); // Prevent form submission for validation
 
       var error;

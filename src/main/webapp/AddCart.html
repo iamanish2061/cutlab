@@ -44,7 +44,9 @@
 
     <script type="module" src="js/addCart.js"></script>
     <script>
-        $("#navbar").load("includes/navbar.html");
+        $("#navbar").load("includes/navbar.html", function() {
+            $.getScript("js/navbar.js");
+        });
     </script>
 </body>
 </html>

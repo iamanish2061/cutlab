@@ -12,6 +12,18 @@
   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
+
+    <!-- popup for filling form -->
+     <div id="formfill-modal" class="formfill-modal">
+      <div class="formfill-modal-content">
+        <p>Do you want to tell more about who you are?</p>
+        <div class="formfill-modal-buttons">
+          <button id="formfill-confirm" class="formfill-btn confirm">Yes</button>
+          <button id="formfill-cancel" class="formfill-btn cancel">Not Now</button>
+        </div>
+      </div>
+    </div>
+
     <nav class="navbar" id="navbar">
         <!-- code of navbar -->
     </nav>
@@ -38,9 +50,44 @@
         <div class="loader">Loading products...</div>
     </main>
 
+    <div id="toast" class="toast"></div>
+
+    <script src="js/CommonFunction.js"></script>
     <script src="js/products.js"></script>
     <script>
-        $("#navbar").load("includes/navbar.html");
-      </script>
+        $("#navbar").load("includes/navbar.html", function() {
+        $.getScript("js/navbar.js");
+        });
+
+        const queryString = window.location.search;
+        const params = new URLSearchParams(queryString);
+        const popUpValue = params.get('popUp');
+        const modal = document.getElementById('formfill-modal');
+
+        if(popUpValue === 'true' && modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('active'); // Trigger fade-in
+            }, 10);
+        }
+       
+        // Event listeners for the form fill modal
+        const formConfirm = document.getElementById('formfill-confirm');
+        const formCancel = document.getElementById('formfill-cancel');
+        if(formConfirm && formCancel) {
+            formConfirm.addEventListener('click', function() {
+                window.location.href = 'signupAdditional.html?source=products.html';
+            });
+
+            formCancel.addEventListener('click', function() {
+                modal.classList.remove('active');
+                 setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300); 
+            });
+        }
+        
+
+    </script>
 </body>
 </html>

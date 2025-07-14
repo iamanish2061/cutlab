@@ -44,6 +44,7 @@ public class AdditionalInfoProcess extends HttpServlet{
 		String dob = request.getParameter("dob").trim();
         String address = request.getParameter("address").trim();
         String phone = request.getParameter("phone").trim();
+        String source = request.getParameter("source").trim();
         
         User u = new User();
         u.setFirstName(fname);
@@ -56,9 +57,8 @@ public class AdditionalInfoProcess extends HttpServlet{
         try {
 			boolean result = db.insertAdditionalInfo(u, userId);
 			if(result) {
-				response.sendRedirect("/cutlab/product.html"); //from product or div that is popped after user gets into product page
-//		        if from profile("profile ma redirect")
-//		        (cart maa redirect) if default
+				session.setAttribute("name", fname);
+				response.sendRedirect("/cutlab/"+source); 
 			}else {
 				response.sendRedirect("/cutlab/signupAdditional.html?error=Failed to store your data! Please try again after few seconds!!");
 			}
@@ -66,9 +66,7 @@ public class AdditionalInfoProcess extends HttpServlet{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        
+           
     }
-	
 
 }

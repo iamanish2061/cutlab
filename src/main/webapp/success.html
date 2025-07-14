@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transaction Successful</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .floating-wrapper {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .success-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      overflow: hidden;
+      transform: scale(0);
+      opacity: 0;
+      animation: scaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .success-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .checkmark {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: inline-block;
+      background: #e8f8f5;
+      position: relative;
+      margin-bottom: 25px;
+      animation: bounceIn 0.6s ease-in-out;
+    }
+
+    .checkmark::after {
+      content: '';
+      position: absolute;
+      left: 30px;
+      top: 50px;
+      width: 25px;
+      height: 50px;
+      border-right: 5px solid #2ecc71;
+      border-bottom: 5px solid #2ecc71;
+      transform: rotate(45deg) translate(-50%, -50%);
+      animation: checkmarkDraw 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+      opacity: 0;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-weight: 700;
+      font-size: 28px;
+    }
+
+    p {
+      color: #7f8c8d;
+      margin-bottom: 30px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .profile-link {
+      display: inline-block;
+      padding: 12px 30px;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 242, 254, 0.4);
+    }
+
+    .profile-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .profile-link:hover::before {
+      left: 100%;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 0;
+    }
+
+    @keyframes scaleIn {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      80% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes checkmarkDraw {
+      0% {
+        height: 0;
+        width: 0;
+        opacity: 0;
+      }
+      20% {
+        height: 0;
+        width: 25px;
+        opacity: 1;
+      }
+      40% {
+        height: 50px;
+        width: 25px;
+        opacity: 1;
+      }
+      100% {
+        height: 50px;
+        width: 25px;
+        opacity: 1;
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-wrapper">
+    <div class="success-container">
+      <div class="checkmark"></div>
+      <h1>Transaction Successful!</h1>
+      <p>Your order has been placed successfully. Thank you for your purchase!</p>
+      <a href="profile.html" class="profile-link">Go to Your Profile</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      function createConfetti() {
+        const colors = ['#4facfe', '#00f2fe', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6'];
+        const container = document.querySelector('body');
+
+        for (let i = 0; i < 50; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.top = -10 + 'px';
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+          container.appendChild(confetti);
+
+          const animationDuration = Math.random() * 3 + 2;
+
+          confetti.animate([
+            {
+              top: '-10px',
+              opacity: 1,
+              transform: `translateX(${Math.random() * 20 - 10}px) rotate(${Math.random() * 360}deg)`
+            },
+            {
+              top: '100vh',
+              opacity: 0,
+              transform: `translateX(${Math.random() * 40 - 20}px) rotate(${Math.random() * 720}deg)`
+            }
+          ], {
+            duration: animationDuration * 1000,
+            easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+            delay: Math.random() * 2000
+          });
+
+          setTimeout(() => {
+            confetti.remove();
+          }, animationDuration * 1000);
+        }
+      }
+
+      // Initial confetti burst
+      setTimeout(createConfetti, 800);
+    });
+  </script>
+</body>
+</html>

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.dao.Database;
 import com.dao.Utility;
-import com.esewa.EsewaSignatureUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -39,12 +38,18 @@ public class LoginProcess extends HttpServlet {
 	                HttpSession newSession = request.getSession(true);
 	                newSession.setAttribute("loginStatus", true);
 	                
+	                //user id in session
 	                if(db.returnId(email) > 0) {
 	                	newSession.setAttribute("user_id", db.returnId(email));
 	                }else {
-	                	newSession.setAttribute("user_id", "Not Found");
+	                	newSession.setAttribute("user_id", null);
 	                }
+	                
+	                //name in session
+                	newSession.setAttribute("name", db.returnName(email));
+	                
 	                newSession.setMaxInactiveInterval(60 * 60); //session timeout (1 hour)
+	                	                
 	                jsonResponse.put("status", "success");
 	            	jsonResponse.put("redirect", "products.html");  // Redirect if login is successful
 	            	

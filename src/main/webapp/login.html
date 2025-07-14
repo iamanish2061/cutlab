@@ -14,6 +14,7 @@
   
     <!-- jQuery and jQuery UI (CDN) -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
@@ -34,7 +35,10 @@
                 <div class="input-group">
                     <label for="login-password">Password</label>
                     <input type="password" id="login-password" name="login-password" autocomplete="current-password" required>
-                    <img class="eye-icon" src="images/eye.png" alt="" onmouseover="passwordToggleShowHide('login-password','in')" onmouseout="passwordToggleShowHide('login-password','out')">
+                    <span class="toggle-password" onclick="togglePassword('login-password', 'showPassword', 'hidePassword')" style="position:absolute; right:15px; top:22px; cursor:pointer;">
+                        <i class="fas fa-eye" id="showPassword" style="display:none;" ></i>
+                        <i class="fas fa-eye-slash" id="hidePassword"></i>
+                    </span>
                 </div>
 
                 <div class="login-error-msg" id="login-error-msg">  </div>  
@@ -73,12 +77,18 @@
                   <div class="input-group">
                     <label for="signup-password">Password</label>
                     <input type="password" id="signup-password" name="signup-password" autocomplete="new-password" required>
-                    <img class="eye-icon" src="images/eye.png" alt="" onmouseover="passwordToggleShowHide('signup-password','in')" onmouseout="passwordToggleShowHide('signup-password','out')">
+                    <span class="toggle-password" onclick="togglePassword('signup-password', 'showPassword', 'hidePassword')" style="position:absolute; right:15px; top:22px; cursor:pointer;">
+                        <i class="fas fa-eye" id="showPassword" style="display:none;" ></i>
+                        <i class="fas fa-eye-slash" id="hidePassword"></i>
+                    </span>
                   </div>
                   <div class="input-group">
                     <label for="signup-confirm">Confirm Password</label>
                     <input type="password" id="signup-confirm" name="signup-confirm" autocomplete="new-password" required>
-                    <img class="eye-icon" src="images/eye.png" alt="" onmouseover="passwordToggleShowHide('signup-confirm','in')" onmouseout="passwordToggleShowHide('signup-confirm','out')">
+                    <span class="toggle-password" onclick="togglePassword('signup-confirm', 'showConfirmPassword', 'hideConfirmPassword')" style="position:absolute; right:15px; top:22px; cursor:pointer;">
+                        <i class="fas fa-eye" id="showConfirmPassword" style="display:none;" ></i>
+                        <i class="fas fa-eye-slash" id="hideConfirmPassword"></i>
+                    </span>  
                   </div>
               
                   <div class="signup-error-msg" id="password-signup-error-msg"></div>
@@ -110,6 +120,8 @@
 
         </div>
     </div>
+
+    <div id="toast" class="toast"></div>
 
     
     <script src="js/CommonFunction.js"></script>

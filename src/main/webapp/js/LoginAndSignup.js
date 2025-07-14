@@ -128,10 +128,11 @@
             return;
         }
 
-        displayMsg.text('Logging in...').css('color', 'blue');
+        showToast('Logging in...');
         $('#login-btn').prop('disabled', true); //disabling login button to prevent more clicking
 
-        $.ajax({
+        setTimeout(() => {
+            $.ajax({
             url: '/cutlab/LoginProcess',
             type: 'POST',
             dataType: 'json',
@@ -141,7 +142,6 @@
                     },
             success: function(response){
             if(response && response.status == 'success'){
-                alert ("Login Successful.");
                 window.location.href = response.redirect;
             }else{
                 displayMsg.text(response.message || 'Invalid Login Attempt!').css('color', 'red');
@@ -153,6 +153,8 @@
                 $('#login-btn').prop('disabled', false);
             }
         });
+        }, 1500);
+        
     });
 
     // to submit signup form
