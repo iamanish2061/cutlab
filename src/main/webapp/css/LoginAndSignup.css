@@ -1,8 +1,7 @@
 /* Base styles and reset */
 /* Color Variables */
 :root {
-  /* Primary Colors */
-  --primary: #2C3E50;
+ --primary: #2C3E50;
   --secondary: #3498DB;
   --accent: #E74C3C;
   
@@ -38,11 +37,7 @@
 }
 
 /* Base styles and reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+
 
 body {
   font-family: var(--font-body);

@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Primary Colors */
+  --primary: #2C3E50;
+  --secondary: #3498DB;
+  --accent: #E74C3C;
+  
+  /* Neutral Colors */
+  --neutral-light: #ECF0F1;
+  --neutral-dark: #34495E;
+  
+  /* Utility Colors */
+  --success: #2ECC71;
+  --warning: #F1C40F;
+  --error: #E74C3C;
+  
+  /* Text Colors */
+  --text-light: #FFFFFF;
+  --text-dark: #2C3E50;
+  
+  /* Background Colors */
+  --secondary-bg: #FFFFFF; /* White background for cards */
+}
