@@ -29,12 +29,12 @@
               <form id="login-form">
                 <h2>Login</h2>
                 <div class="input-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" name="login-email" autocomplete="username" required> 
+                    <!-- <label for="login-email">Email</label> -->
+                    <input placeholder="Email" type="email" id="login-email" name="login-email" autocomplete="username" required> 
                 </div>
                 <div class="input-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" name="login-password" autocomplete="current-password" required>
+                    <!-- <label for="login-password">Password</label> -->
+                    <input placeholder="Password" type="password" id="login-password" name="login-password" autocomplete="current-password" required>
                     <span class="toggle-password" onclick="togglePassword('login-password', 'showPassword', 'hidePassword')" style="position:absolute; right:15px; top:22px; cursor:pointer;">
                         <i class="fas fa-eye" id="showPassword" style="display:none;" ></i>
                         <i class="fas fa-eye-slash" id="hidePassword"></i>
@@ -55,8 +55,7 @@
                 <h2>Create Account</h2>
                 <div class="emailSection" id="emailSection">
                   <div class="input-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" name="signup-email" autocomplete="email" required>
+                    <input placeholder="Email" type="email" id="signup-email" name="signup-email" autocomplete="email" required>
                   </div>
                   <div><a id="sendCode">Send Code</a></div>
                   <div class="verificationCode" id="verificationCode" style="display:none;">
@@ -75,8 +74,7 @@
                              
                 <div class="passwordSection" id="passwordSection" style="display: none;">
                   <div class="input-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" name="signup-password" autocomplete="new-password" required>
+                    <input placeholder="Password" id="signup-password" name="signup-password" autocomplete="new-password" required>
                     <span class="toggle-password" onclick="togglePassword('signup-password', 'showPassword', 'hidePassword')" style="position:absolute; right:15px; top:22px; cursor:pointer;">
                         <i class="fas fa-eye" id="showPassword" style="display:none;" ></i>
                         <i class="fas fa-eye-slash" id="hidePassword"></i>

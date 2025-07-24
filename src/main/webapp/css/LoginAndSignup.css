@@ -37,7 +37,14 @@
 }
 
 /* Base styles and reset */
-
+*{
+  padding: 0;
+  margin:0;
+  box-sizing: border-box;
+}
+form{
+  width: 100%;
+}
 
 body {
   font-family: var(--font-body);
@@ -187,11 +194,13 @@ a {
 .overlay-panel h2 {
   font-family: var(--font-secondary);
   font-weight: var(--font-bold);
+  color: #ffff;
 }
 
 .overlay-panel p {
   font-family: var(--font-body);
   font-weight: var(--font-light);
+  color: #ffff;
 }
 
 .overlay-left {
@@ -228,7 +237,7 @@ a {
 
 .input-group {
   position: relative;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -265,14 +274,18 @@ a {
 .input-group input {
   font-family: var(--font-body);
   font-weight: var(--font-regular);
-  background-color: #f5f7fa;
+  background-color: #eee;
   border: none;
   border-radius: 8px;
   padding: 12px 15px;
   margin: 8px 0;
-  width: 90%;
+  width: 100%;
   font-size: 1rem;
   outline: none;
+}
+.input-group::placeholder{
+  color: #888;
+  font-weight: var(--font-regular);
 }
 
 .gender-list{
