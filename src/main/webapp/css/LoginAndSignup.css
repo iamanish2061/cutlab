@@ -54,7 +54,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 h2 {
@@ -257,19 +257,6 @@ a {
   align-items: flex-end;
 }
 
-.input-group label {
-  font-family: var(--font-body);
-  font-weight: var(--font-regular);
-  width: 20%;
-  font-size: 0.9rem;
-  pointer-events: none;
-  transition: 0.3s ease all;
-}
-
-.input-group-inside label{
-  width: 90%;
-  text-align: center;
-}
 
 .input-group input {
   font-family: var(--font-body);

@@ -41,7 +41,7 @@
                     </span>
                 </div>
 
-                <div class="login-error-msg" id="login-error-msg">  </div>  
+                <div class="login-error-msg" id="login-error-msg"></div>  
                 <div class="forgot-password">
                     <a href="forgotPassword.html">Forgot Password?</a>
                 </div>
@@ -60,8 +60,7 @@
                   <div><a id="sendCode">Send Code</a></div>
                   <div class="verificationCode" id="verificationCode" style="display:none;">
                     <div class="input-group">
-                        <label for="random-generated-code">Enter code</label>
-                        <input type="text" id="random-generated-code" name="random-generated-code" required>
+                        <input placeholder="Enter code" type="text" id="random-generated-code" name="random-generated-code" required>
                     </div>
                   </div>
           
@@ -81,8 +80,7 @@
                     </span>
                   </div>
                   <div class="input-group">
-                    <label for="signup-confirm">Confirm Password</label>
-                    <input type="password" id="signup-confirm" name="signup-confirm" autocomplete="new-password" required>
+                    <input placeholder="Confirm password" type="password" id="signup-confirm" name="signup-confirm" autocomplete="new-password" required>
                     <span class="toggle-password" onclick="togglePassword('signup-confirm', 'showConfirmPassword', 'hideConfirmPassword')" style="position:absolute; right:15px; top:22px; cursor:pointer;">
                         <i class="fas fa-eye" id="showConfirmPassword" style="display:none;" ></i>
                         <i class="fas fa-eye-slash" id="hideConfirmPassword"></i>
