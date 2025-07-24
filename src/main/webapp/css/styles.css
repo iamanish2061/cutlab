@@ -51,6 +51,7 @@ body {
   background: linear-gradient(to right, var(--secondary), var(--accent)); /* Updated */
   position: relative;
   overflow: hidden;
+  flex-direction: column;
 }
 
 .hero-title {
