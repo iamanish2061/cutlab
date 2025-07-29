@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+        }
+        .login-container {
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+            border-radius: 16px;
+            padding: 40px 32px;
+            width: 350px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-container h2 {
+            color: #fff;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+        .input-group {
+            width: 90%;
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .input-group label {
+            color: #bbb;
+            font-size: 14px;
+            margin-bottom: 6px;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+        .input-group input {
+            width: 90%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: background 0.2s;
+        }
+        .input-group input:focus {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .toggle-password {
+            cursor: pointer;
+            color: #bbb;
+            font-size: 18px;
+        }
+
+        .login-btn {
+            width: 90%;
+            padding: 12px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .login-btn:hover {
+            background: linear-gradient(90deg, #5a67d8 0%, #6b47b6 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .error-message {
+            color: #ff6b6b;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <form class="login-container" id="loginForm" autocomplete="off" action="" method="post">
+        <h2>Admin Login</h2>
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required autofocus>
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <span class="toggle-password" id="togglePassword">Show Password <input type="checkbox"></span>
+
+        <button type="submit" class="login-btn">Login</button>
+        <div class="error-message" id="errorMsg">Invalid username or password.</div>
+    </form>
+    <script>
+        
+        document.getElementById('togglePassword').querySelector('input[type="checkbox"]').addEventListener('change', function() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = this.checked ? 'text' : 'password';
+        });
+
+        // Simple form validation (replace with real authentication)
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            
+            
+
+        });
+    </script>
+</body>
+</html>
