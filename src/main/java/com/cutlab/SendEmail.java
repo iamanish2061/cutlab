@@ -31,11 +31,11 @@ import jakarta.servlet.http.HttpSession;
 public class SendEmail extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // SMTP Server Configuration (Gmail example)
+    // SMTP Server Configuration 
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
     private static final String USERNAME = "anishpersonalanne@gmail.com";
-    private static final String PASSWORD = "wrst ojgq xevw ncqd"; // Store password in environment variable
+    private static final String PASSWORD = "{MY_EMAIL_PASSWORD}"; 
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
